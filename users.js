@@ -1,14 +1,12 @@
 var path = require('path');
 var jwt = require('jsonwebtoken');
 var cookie = require('cookie');
-// var bcrypt = require('bcrypt');
 var serveStatic = require('serve-static');
 
 var APP_DIR = path.join(__dirname, './app');
 var APP_PATH = '/users';
 var JWT_COOKIE_NAME = 'nr.nodeUsers.jwt';
 var JWT_COOKIE_EXPIRY =  604800000; // 7 days
-// var PW_SALT_ROUNDS = 10;
 
 var inited = false;
 var log,
@@ -25,7 +23,7 @@ function getRandomStr(len) {
 }
 
 function createJwtToken(req, res, jwtSecret, jwtCookieName, payload) {
-  var token = jwt.sign(payload, jwtSecret); // TODO: add expiry and algorithm
+  var token = jwt.sign(payload, jwtSecret);
   res.cookie(jwtCookieName, token, {
     maxAge: JWT_COOKIE_EXPIRY
   });
@@ -99,7 +97,6 @@ function handleLogout(req, res) {
 function init(server, app, _log, redSettings) {
   var fullPath = path.join(redSettings.httpAdminRoot, APP_PATH);
   log = _log;
-  jwtSecret = getRandomStr(32); // generate new jwt secret
 
   app.post(path.join(APP_PATH, '/login'), function (req, res) {
     handleLogin(req, res);
@@ -126,45 +123,12 @@ function init(server, app, _log, redSettings) {
   log.info("Node users started " + fullPath);
 }
 
-module.exports = function (RED) {
+module.exports = function(RED, _usersConfig) {
   if (!inited) {
     inited = true;
     init(RED.server, RED.httpAdmin, RED.log, RED.settings);
   }
-
-  function UsersConfig(n) {
-    RED.nodes.createNode(this,n);
-    var node = this;
-
-    if (n.nodeUsers === undefined) {
-      log.error("Node users: Missing user list");
-      node.error(RED._("users.errors.missing-user-list"));
-    }
-
-    usersConfig = n;
-    // n.nodeUsers.forEach(function (u) {
-    //   if (u.dirty) {
-    //     try {
-    //       var hash = bcrypt.hashSync(u.password.toString(), PW_SALT_ROUNDS);
-    //       u.password = hash;
-    //     } catch (err) {
-    //       console.error(err);
-    //       node.error(RED._("users.errors.password-hash-failed"));
-    //     }
-    //   }
-    //   delete u.dirty;
-    // });
-  }
-
-  function UsersLoginNode(n) { // TODO: make this a singleton node
-    RED.nodes.createNode(this,n);
-    var node = this;
-    node.status({});
-    node.usersConfig = RED.nodes.getNode(n.usersConfig);
-  }
-
-  RED.nodes.registerType("users-config", UsersConfig);
-
-  RED.nodes.registerType("users-login", UsersLoginNode);
-
+  console.log('-- require users module');
+  usersConfig = _usersConfig;
+  jwtSecret = getRandomStr(32); // generate new jwt secret on deploy to clear existing sessions
 };

@@ -35,10 +35,6 @@
 .node-input-users-container-row > ul > li > a {
   float: right;
 }
-.node-input-users-container-row > ul > li > a {
-
-}
-
 .node-input-add-users-container-row {
 }
 #node-input-add-option {
@@ -49,7 +45,7 @@
 }
 </style>
 
-<script type="text/x-red" data-template-name="users-config">
+<script type="text/x-red" data-template-name="users_config">
   <div class="form-row">
     <label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
     <input type="text" id="node-config-input-name" data-i18n="[placeholder]node-red:common.label.name">
@@ -80,7 +76,7 @@
 </script>
 
 <script type="text/javascript">
-  RED.nodes.registerType('users-config', {
+  RED.nodes.registerType('users_config', {
     category: 'config',
     defaults: {
       name: {value: ""},
@@ -111,9 +107,11 @@
         nodeUsersList.append(listItem);
       }
 
-      node.nodeUsers.forEach(function (u) {
-        renderUserRow(u);
-      });
+      if (node.nodeUsers) {
+        node.nodeUsers.forEach(function (u) {
+          renderUserRow(u);
+        });
+      }
 
       $(".node-input-users-container-row > ul > li > a").click(function () {
         var username = $(this).parents("li").data('username');
@@ -152,35 +150,6 @@
         });
       });
       node.nodeUsers = nodeUsers;
-      console.log(nodeUsers)
-    }
-  });
-</script>
-
-<script type="text/x-red" data-template-name="users-login">
-  <div class="form-row" id="users-config-row">
-    <label for="node-input-usersConfig"><i class="fa fa-users"></i> <span data-i18n="users.label.usersConfig"></span></label>
-    <input type="text" id="node-input-usersConfig">
-  </div>
-  <div class="form-row">
-    <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-    <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
-  </div>
-</script>
-
-<script type="text/javascript">
-  RED.nodes.registerType('users-login', {
-    category: 'Node Users',
-    defaults: {
-      name: {value: ""},
-      usersConfig: {type: "users-config"},
-    },
-    icon: "users.png",
-    color: "#fff",
-    inputs: 0,
-    outputs: 0,
-    label: function () {
-      return this.name || "Users login";
     }
   });
 </script>
