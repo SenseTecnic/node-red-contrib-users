@@ -1,0 +1,18 @@
+{
+  "users": {
+    "label": {
+      "username": "Username",
+      "password": "Password",
+      "role": "Role",
+      "usersConfig": "Node users",
+      "jwtSecret": "JWT Secret"
+    },
+    "placeholder": {
+      "jwtSecret": "JWT Secret"
+    },
+    "errors": {
+      "missing-user-list": "Registered user list is not set",
+      "password-hash-failed": "Something went wrong with hashing your password"
+    }
+  }
+}

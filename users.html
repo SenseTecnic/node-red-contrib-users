@@ -1,0 +1,186 @@
+<style>
+.node-input-users-container-row {
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+.node-input-users-container-row > ul {
+  list-style: none;
+  height: 240px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  width: calc(100% - 137px);
+  display: inline-block;
+  margin: 0;
+  vertical-align: top;
+}
+.node-input-users-container-row > ul > li {
+  margin: 0 5px;
+  border-bottom: 1px solid #ccc;
+  position: relative;
+  padding: 10px 5px;
+}
+.node-input-users-container-row > ul > li > span {
+  display: inline-block;
+}
+.node-input-users-container-row > ul > li > span.users-username {
+}
+.node-input-users-container-row > ul > li > span.users-role {
+  margin-left: 5px;
+  color: #999;
+}
+.node-input-users-container-row > ul > li > a {
+  float: right;
+}
+.node-input-users-container-row > ul > li > a {
+
+}
+
+.node-input-add-users-container-row {
+}
+#node-input-add-option {
+  margin-left: 103px;
+}
+#node-input-add-option i {
+  margin-right: 5px;
+}
+</style>
+
+<script type="text/x-red" data-template-name="users-config">
+  <div class="form-row">
+    <label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+    <input type="text" id="node-config-input-name" data-i18n="[placeholder]node-red:common.label.name">
+  </div>
+  <div class="form-row node-input-users-container-row">
+    <label><i class="fa fa-users"></i> Users</label>  
+    <ul></ul>
+  </div>
+  <div class="form-row">
+    <label><i class="fa fa-tag"></i> <span>Username</span></label>
+    <input type="text"  id="node-config-input-users-username" data-i18n="[placeholder]users.label.username" />
+  </div>
+  <div class="form-row">
+    <label><i class="fa fa-lock"></i> <span>Password</span></label>
+    <input type="text"  id="node-config-input-users-password" data-i18n="[placeholder]users.label.password" />
+  </div>
+  <div class="form-row">
+    <label><i class="fa fa-user"></i> <span>User role</span></label>
+    <select id="node-config-input-users-role">
+      <option value="user" selected>User</option>
+      <option value="admin">Admin</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <a href="#" class="editor-button" id="node-input-add-option"><i class="fa fa-plus"></i><span>add user</span></a>
+  </div>
+
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('users-config', {
+    category: 'config',
+    defaults: {
+      name: {value: ""},
+      nodeUsers: {value: ""}
+    },
+    inputs: 0,
+    outputs: 0,
+    label: function () {
+      return this.name || "Node users";
+    },
+    oneditprepare: function () {
+      var node = this;
+      var nodeUsersList = $(".node-input-users-container-row > ul");
+
+      function renderUserRow (user) {
+        var listItem = $("<li />", {
+          "data-username": user.username, 
+          "data-role": user.role, 
+          "data-hash": user.password, 
+          // "data-dirty": user.dirty
+        });
+        var username = $("<span />", {"class": "users-username"}).appendTo(listItem);
+        var role = $("<span />", {"class": "users-role"}).appendTo(listItem);
+        var deleteBtn = $("<a />", {href:"#", class: "editor-button editor-button-small"}).appendTo(listItem);
+        var ico = $("<i />", {class: "fa fa-remove"}).appendTo(deleteBtn);
+        username.text(user.username);
+        role.text("("+user.role+")");
+        nodeUsersList.append(listItem);
+      }
+
+      node.nodeUsers.forEach(function (u) {
+        renderUserRow(u);
+      });
+
+      $(".node-input-users-container-row > ul > li > a").click(function () {
+        var username = $(this).parents("li").data('username');
+        $(".node-input-users-container-row > ul > li").each(function () {
+          if ($(this).data("username") === username) {
+            $(this).remove();
+          }
+        });
+      });
+
+      $("#node-input-add-option").click(function () {
+        //TODO: validate input
+        var user = {
+          username: $("#node-config-input-users-username").val(),
+          password: $("#node-config-input-users-password").val(),
+          role: $("#node-config-input-users-role").val(),
+          // dirty: true
+        };
+        $("#node-config-input-users-username").val("");
+        $("#node-config-input-users-password").val("");
+        $("#node-config-input-users-role").val("user");
+        renderUserRow(user);
+      });
+    },
+    oneditsave: function () {
+      var node = this;
+      var nodeUsersList = $(".node-input-users-container-row > ul > li");
+      var nodeUsers = [];
+      nodeUsersList.each(function () {
+        var item = $(this);
+        nodeUsers.push({
+          username: item.data('username').toString(),
+          password: item.data("hash").toString(),
+          role: item.data("role"),
+          // dirty: item.data("dirty")
+        });
+      });
+      node.nodeUsers = nodeUsers;
+      console.log(nodeUsers)
+    }
+  });
+</script>
+
+<script type="text/x-red" data-template-name="users-login">
+  <div class="form-row" id="users-config-row">
+    <label for="node-input-usersConfig"><i class="fa fa-users"></i> <span data-i18n="users.label.usersConfig"></span></label>
+    <input type="text" id="node-input-usersConfig">
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+    <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+  </div>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('users-login', {
+    category: 'Node Users',
+    defaults: {
+      name: {value: ""},
+      usersConfig: {type: "users-config"},
+    },
+    icon: "users.png",
+    color: "#fff",
+    inputs: 0,
+    outputs: 0,
+    label: function () {
+      return this.name || "Users login";
+    }
+  });
+</script>

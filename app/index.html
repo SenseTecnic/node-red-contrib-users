@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="shortcut icon" type="image/png" href="icon.png">
+    <link href="/users/static/app.css" rel="stylesheet">
+
+    <title>Node-RED Node Users</title>
+</head>
+<body>
+
+  <div class="login-wrapper">
+    <h3>You are logged in as</h3>
+    <h1 id="username"></h1>
+    <p id="role">role: <span></span></p>
+    <a id="logout-link" href="/users/logout">Logout</a>
+  </div>
+
+  <script src="/users/static/jquery.min.js"></script>
+  <script>
+    function parseJwt (token) {
+      var base64Url = token.split('.')[1];
+      var base64 = base64Url.replace('-', '+').replace('_', '/');
+      return JSON.parse(window.atob(base64));
+    };
+
+    function readCookie(name) {
+      var nameEQ = name + "=";
+      var ca = document.cookie.split(';');
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+      }
+      return null;
+    }
+
+    function getParameterByName(name) {
+      var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+      return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+    }
+
+    var token = readCookie('nr.nodeUsers.jwt');
+    var payload = parseJwt(token);
+    $("#username").text(payload.username);
+    $("#role > span").text(payload.role);
+
+    var returnUrl = getParameterByName('return');
+    if (returnUrl) {
+      $("#logout-link").attr("href", "/users/logout?return="+returnUrl);
+    }
+  </script>
+</body>
+</html>

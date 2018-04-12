@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" type="image/png" href="icon.png">
+  <link href="/users/static/app.css" rel="stylesheet">
+
+  <title>Node-RED Node Users</title>
+</head>
+<body>
+
+  <div class="login-wrapper">
+    
+    <h1>Node Users Demo</h1>
+    <form id="login-form">
+      <div class="form-group">
+        <input type="text" name="username" placeholder="Username"/>  
+      </div>
+      <div class="form-group">
+        <input type="password" name="password" placeholder="Password"/>  
+      </div>
+      <button type="submit">Login</button>
+      <div class="response"></div>
+    </form>
+
+  </div>
+
+  <script src="/users/static/jquery.min.js"></script>
+  <script>
+    var responseTimer;
+
+    function showResponse(message, type) {
+      $(".response").text(message);
+      $(".response").removeClass("success").removeClass("error").addClass(type).show();
+
+      clearTimeout(responseTimer);
+      responseTimer = setTimeout(function () {
+        $(".response").fadeOut();
+      }, 4000);
+    }
+
+    function getParameterByName(name) {
+      var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+      return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+    }
+
+    $("#login-form").submit(function (e) {
+      e.preventDefault();
+      var username = $(this).find("input[name=username]").val();
+      var password = $(this).find("input[name=password]").val();
+      var cred = {
+        username: username,
+        password: password
+      };
+      $.post('/users/login', cred).done(function () {
+        showResponse("Login success! Redirecting...", "success");
+        setTimeout(function () {
+          var returnUrl = getParameterByName('return');
+          if (returnUrl) {
+            window.location = returnUrl;  
+          } else {
+            window.location = "/users";
+          }
+        }, 2000);        
+      }).fail(function (xhr) {
+        var msg = "";
+        switch(xhr.status) {
+          case 0:
+            msg = "Failed to connect with server.";
+            break;
+          case 401: 
+            msg = "Unauthorized: username and password not found";
+            break;
+          default: 
+            msg = "Server error: oops.. something went wrong...";
+        }
+        showResponse(msg, "error");
+      });
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,102 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  background-color: #fcfcfc;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 15px;
+  background: #607278;
+  background: -moz-radial-gradient(center, ellipse cover, #607278 0%, #131d28 150%);
+  background: -webkit-radial-gradient(center, ellipse cover, #607278 0%, #131d28 150%);
+  background: radial-gradient(ellipse at center, #607278 0%, #131d28 150%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#607278', endColorstr='#131d28',GradientType=1 )
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group input {
+  width: 100%;
+  border-radius: 2px;
+
+  display: block;
+  width: 100%;
+  height: 34px;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #555;
+  outline: 0;
+  border: 1px solid #ddd;
+}
+
+.login-wrapper > a, button {
+  text-decoration: none;
+  cursor: pointer;
+  background-color: #00979C;
+  border: 1px solid #008d92;
+  color: #f3f5f6;
+  transition: color 0.2s, background-color 0.2s;
+
+  text-align: center;
+  padding: 12px 60px;
+  font-size: 1.2rem;
+  display: inline-block;
+  margin-bottom: 1rem;
+  border-radius: 2px;
+  background-color: #00979C;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.login-wrapper > a:hover, .login-wrapper > a:active,
+button:hover, button:active {
+  background-color: #00b5bb;
+  color: #f3f5f6;
+  border-color: #00abb0;
+}
+
+.login-wrapper {
+  position: absolute;
+  padding: 15px;
+  margin: 0 auto;
+  width: 400px;
+  color: #EFF0F1;
+  text-align: center;
+  left: calc(50% - 200px);
+  top: calc(50% - 180px);
+}
+
+.response {
+  margin-top: 10px;
+  padding: 15px;
+  color: #fff;
+  border-radius: 2px;
+}
+
+.response.success {
+  background-color: #51b385;
+  border-color: #63bb92;
+}
+
+.response.error {
+  background-color: #c11532;
+  border-color: #c11532;
+}
+
+@media (max-width: 768px) {
+  .login-wrapper {
+    width: 100%;
+    left: 0;
+    top: 100px;
+    padding: 15px 30px;
+  }
+}
