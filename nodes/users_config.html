@@ -50,6 +50,10 @@
     <label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
     <input type="text" id="node-config-input-name" data-i18n="[placeholder]node-red:common.label.name">
   </div>
+  <div class="form-row">
+    <label for="node-config-input-jwtSecret"><i class="fa fa-tag"></i> <span data-i18n="users.label.jwtSecret"></span></label>
+    <input type="text" id="node-config-input-jwtSecret" data-i18n="[placeholder]users.label.jwtSecret">
+  </div>
   <div class="form-row node-input-users-container-row">
     <label><i class="fa fa-users"></i> Users</label>  
     <ul></ul>
@@ -75,12 +79,22 @@
 
 </script>
 
+
 <script type="text/javascript">
+  var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  var jwtSecretGenerated = '';
+  for (var i = 32; i > 0; --i) {
+    jwtSecretGenerated += chars[Math.floor(Math.random() * chars.length)]
+  };
+  
   RED.nodes.registerType('users_config', {
     category: 'config',
     defaults: {
       name: {value: ""},
-      nodeUsers: {value: ""}
+      jwtSecret: {
+        value: jwtSecretGenerated
+      },
+      nodeUsers: {value: []}
     },
     inputs: 0,
     outputs: 0,

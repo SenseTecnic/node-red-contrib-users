@@ -10,17 +10,7 @@ var JWT_COOKIE_EXPIRY =  604800000; // 7 days
 
 var inited = false;
 var log,
-  usersConfig,
-  jwtSecret;
-
-function getRandomStr(len) {
-  var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  var result = '';
-  for (var i = len; i > 0; --i) {
-    result += chars[Math.floor(Math.random() * chars.length)]
-  };
-  return result;
-}
+  usersConfig;
 
 function createJwtToken(req, res, jwtSecret, jwtCookieName, payload) {
   var token = jwt.sign(payload, jwtSecret);
@@ -38,7 +28,7 @@ function getTokenFromRequest(req) {
   }
 }
 
-function verifyJwt(req) {
+function verifyJwt(req, jwtSecret) {
   var jwtCookie = getTokenFromRequest(req);
   if (!jwtCookie) {
     log.trace("Node users: jwt cookie not found");
@@ -110,7 +100,7 @@ function init(server, app, _log, redSettings) {
   // app.use(APP_PATH, serveStatic(path.join(APP_DIR)));
 
   app.get(path.join(APP_PATH, '/'), function (req, res) {
-    var payload = verifyJwt(req);
+    var payload = verifyJwt(req, usersConfig.jwtSecret);
 
     if (payload) {
       res.sendFile(path.join(APP_DIR, 'index.html'));
@@ -128,7 +118,5 @@ module.exports = function(RED, _usersConfig) {
     inited = true;
     init(RED.server, RED.httpAdmin, RED.log, RED.settings);
   }
-  console.log('-- require users module');
   usersConfig = _usersConfig;
-  jwtSecret = getRandomStr(32); // generate new jwt secret on deploy to clear existing sessions
 };
