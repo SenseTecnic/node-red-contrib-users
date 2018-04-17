@@ -16,7 +16,6 @@
   "node-red": {
     "nodes": {
       "users_config": "nodes/users_config.js",
-      "users_login": "nodes/users_login.js",
       "users_isloggedin": "nodes/users_isloggedin.js"
     }
   },

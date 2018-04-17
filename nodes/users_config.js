@@ -1,7 +1,6 @@
 // var bcrypt = require('bcrypt');
 // var PW_SALT_ROUNDS = 10;
 
-
 module.exports = function (RED) {
 
   function UsersConfig(n) {
@@ -13,7 +12,15 @@ module.exports = function (RED) {
       node.error(RED._("users.errors.missing-user-list"));
     }
 
+    if (!n.jwtSecret) {
+      log.error("Node users: Missing JWT secret");
+      node.error(RED._("users.errors.missing-jwt-secret"));
+    }
+
     var users = require('../users')(RED, n);
+    node.nodeUsers = n.nodeUsers;
+    node.jwtSecret = n.jwtSecret;
+
     // n.nodeUsers.forEach(function (u) {
     //   if (u.dirty) {
     //     try {

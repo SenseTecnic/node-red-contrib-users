@@ -11,7 +11,8 @@
       "jwtSecret": "JWT Secret"
     },
     "errors": {
-      "missing-user-list": "Registered user list is not set",
+      "missing-user-list": "Authorized user list is not set",
+      "missing-jwt-secret": "JWT secret is not set",
       "password-hash-failed": "Something went wrong with hashing your password"
     }
   }

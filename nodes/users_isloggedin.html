@@ -1,7 +1,7 @@
 
 <script type="text/x-red" data-template-name="users_isloggedin">
   <div class="form-row" id="users-config-row">
-    <label for="node-input-usersConfig"><i class="fa fa-users"></i> <span data-i18n="users.label.usersConfig"></span></label>
+    <label for="node-input-usersConfig"><i class="fa fa-users"></i> Users Config</label>
     <input type="text" id="node-input-usersConfig">
   </div>
   <div class="form-row">
@@ -18,9 +18,9 @@
       usersConfig: {type: "users_config"},
     },
     icon: "users.png",
-    color: "#fff",
+    color: "#00abb0",
     inputs: 1,
-    outputs: 1,
+    outputs: 2,
     label: function () {
       return this.name || "is logged in";
     }

@@ -66,7 +66,7 @@ function handleLogin(req, res) {
 
   log.debug('Authenticated node user:'+user.username);
 
-  createJwtToken(req, res, jwtSecret, JWT_COOKIE_NAME, {
+  createJwtToken(req, res, usersConfig.jwtSecret, JWT_COOKIE_NAME, {
     username: user.username,
     role: user.role
   });
@@ -97,7 +97,6 @@ function init(server, app, _log, redSettings) {
   });
 
   app.use(path.join(APP_PATH, 'static'), serveStatic(path.join(APP_DIR, 'static')));
-  // app.use(APP_PATH, serveStatic(path.join(APP_DIR)));
 
   app.get(path.join(APP_PATH, '/'), function (req, res) {
     var payload = verifyJwt(req, usersConfig.jwtSecret);
@@ -107,7 +106,6 @@ function init(server, app, _log, redSettings) {
     } else {
       res.sendFile(path.join(APP_DIR, 'login.html'));
     }
-
   });
 
   log.info("Node users started " + fullPath);

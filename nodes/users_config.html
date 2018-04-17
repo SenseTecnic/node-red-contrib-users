@@ -1,9 +1,4 @@
 <style>
-.node-input-users-container-row {
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 15px;
-  margin-bottom: 15px;
-}
 .node-input-users-container-row > ul {
   list-style: none;
   height: 240px;
@@ -52,8 +47,9 @@
   </div>
   <div class="form-row">
     <label for="node-config-input-jwtSecret"><i class="fa fa-tag"></i> <span data-i18n="users.label.jwtSecret"></span></label>
-    <input type="text" id="node-config-input-jwtSecret" data-i18n="[placeholder]users.label.jwtSecret">
+    <input type="text" id="node-config-input-jwtSecret" data-i18n="[placeholder]users.label.jwtSecret" required>
   </div>
+  <div class="form-row alert alert-info">Create a list of users who are authorized.</div>
   <div class="form-row node-input-users-container-row">
     <label><i class="fa fa-users"></i> Users</label>  
     <ul></ul>
@@ -74,26 +70,18 @@
     </select>
   </div>
   <div class="form-row">
-    <a href="#" class="editor-button" id="node-input-add-option"><i class="fa fa-plus"></i><span>add user</span></a>
+    <a href="#" class="editor-button" id="node-input-add-option"><i class="fa fa-plus"></i><span>Add user to whitelist</span></a>
   </div>
 
 </script>
 
 
 <script type="text/javascript">
-  var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  var jwtSecretGenerated = '';
-  for (var i = 32; i > 0; --i) {
-    jwtSecretGenerated += chars[Math.floor(Math.random() * chars.length)]
-  };
-  
   RED.nodes.registerType('users_config', {
     category: 'config',
     defaults: {
       name: {value: ""},
-      jwtSecret: {
-        value: jwtSecretGenerated
-      },
+      jwtSecret: {value: ""},
       nodeUsers: {value: []}
     },
     inputs: 0,
@@ -104,6 +92,15 @@
     oneditprepare: function () {
       var node = this;
       var nodeUsersList = $(".node-input-users-container-row > ul");
+
+      function generateJwtSecret() {
+        var jwtChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var jwtSecretGenerated = '';
+        for (var i = 32; i > 0; --i) {
+          jwtSecretGenerated += jwtChars[Math.floor(Math.random() * jwtChars.length)]
+        };
+        return jwtSecretGenerated;
+      }
 
       function renderUserRow (user) {
         var listItem = $("<li />", {
@@ -127,7 +124,7 @@
         });
       }
 
-      $(".node-input-users-container-row > ul > li > a").click(function () {
+      $(document).on("click", ".node-input-users-container-row > ul > li > a", function () {
         var username = $(this).parents("li").data('username');
         $(".node-input-users-container-row > ul > li").each(function () {
           if ($(this).data("username") === username) {
@@ -144,11 +141,19 @@
           role: $("#node-config-input-users-role").val(),
           // dirty: true
         };
+        if (user.username === "" || user.password === "") {
+          return;
+        }
         $("#node-config-input-users-username").val("");
         $("#node-config-input-users-password").val("");
         $("#node-config-input-users-role").val("user");
         renderUserRow(user);
       });
+
+      if ($("#node-config-input-jwtSecret").val() === "") {
+        $("#node-config-input-jwtSecret").val(generateJwtSecret());
+      }
+
     },
     oneditsave: function () {
       var node = this;
