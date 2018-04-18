@@ -48,6 +48,7 @@
 }
 #generate-jwt-secret i,
 #node-input-add-option i {
+  vertical-align: middle;
   margin-right: 5px;
 }
 #generate-jwt-secret {
@@ -217,7 +218,7 @@
         nodeUsersList.append(listItem);
       }
 
-      function isUserAdded(username) {
+      function userExists(username) {
         var nodeUsersList = $(".node-input-users-container-row > ul > li");
         var exists = nodeUsersList.filter(function () {
           return $(this).data("username") === username;
@@ -241,7 +242,12 @@
           password: $("#node-config-input-users-password").val(),
           role: $("#node-config-input-users-role").val()
         };
-        if (user.username === "" || user.password === "" || isUserAdded(user.username) === true) {
+        if (user.username === "" || user.password === "") {
+          RED.notify("Username and password fields are required.", "error");
+          return;
+        }
+        if (userExists(user.username) === true) {
+          RED.notify("User with username \""+user.username+"\" already exist in the list.", "error");
           return;
         }
         $("#node-config-input-users-username").val("");

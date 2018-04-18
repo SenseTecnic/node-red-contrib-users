@@ -30,7 +30,7 @@ function verifyJwt(req) {
   try {
     return jwt.verify(jwtCookie, usersConfig.jwtSecret);
   } catch (err) {
-    log.trace("Node users: " + err);
+    log.trace("Node users: Failed to verify jwt - " + err);
     return false;
   }
 }
@@ -109,7 +109,6 @@ function init(server, app, _log, redSettings) {
 
   log.info("Node users started " + fullPath);
 }
-
 
 module.exports = {
   init: function (RED, _usersConfig) {
