@@ -1,21 +1,24 @@
 
 <script type="text/x-red" data-template-name="users_isloggedin">
-  <div class="form-row" id="users-config-row">
+<!--   <div class="form-row" id="users-config-row">
     <label for="node-input-usersConfig"><i class="fa fa-users"></i> Users Config</label>
     <input type="text" id="node-input-usersConfig">
-  </div>
+  </div> -->
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
     <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
   </div>
 </script>
 
+<script type="text/x-red" data-help-name="users_isloggedin">
+  TODO
+</script>
+
 <script type="text/javascript">
   RED.nodes.registerType('users_isloggedin', {
     category: 'Node Users',
     defaults: {
-      name: {value: ""},
-      usersConfig: {type: "users_config"},
+      name: {value: ""}
     },
     icon: "users.png",
     color: "#00abb0",

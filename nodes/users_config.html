@@ -1,13 +1,24 @@
 <style>
+.node-users-config-wrapper {
+  margin: 20px;
+}
+.node-users-config-wrapper select, 
+.node-users-config-wrapper input {
+  width: 100%;
+  margin-bottom: 0;
+}
+.node-users-config-wrapper label {
+  font-weight: bold;
+}
 .node-input-users-container-row > ul {
   list-style: none;
+  width: 100%;
   height: 240px;
   overflow-y: scroll;
   overflow-x: hidden;
   border: 1px solid #ccc;
   border-radius: 5px;
   box-sizing: border-box;
-  width: calc(100% - 137px);
   display: inline-block;
   margin: 0;
   vertical-align: top;
@@ -33,44 +44,20 @@
 .node-input-add-users-container-row {
 }
 #node-input-add-option {
-  margin-left: 103px;
+  margin-top: 10px;
 }
+#generate-jwt-secret i,
 #node-input-add-option i {
   margin-right: 5px;
+}
+#generate-jwt-secret {
+  margin-top: 7px;
 }
 </style>
 
 <script type="text/x-red" data-template-name="users_config">
-  <div class="form-row">
-    <label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-    <input type="text" id="node-config-input-name" data-i18n="[placeholder]node-red:common.label.name">
-  </div>
-  <div class="form-row">
-    <label for="node-config-input-jwtSecret"><i class="fa fa-tag"></i> <span data-i18n="users.label.jwtSecret"></span></label>
-    <input type="text" id="node-config-input-jwtSecret" data-i18n="[placeholder]users.label.jwtSecret" required>
-  </div>
-  <div class="form-row alert alert-info">Create a list of users who are authorized.</div>
-  <div class="form-row node-input-users-container-row">
-    <label><i class="fa fa-users"></i> Users</label>  
-    <ul></ul>
-  </div>
-  <div class="form-row">
-    <label><i class="fa fa-tag"></i> <span>Username</span></label>
-    <input type="text"  id="node-config-input-users-username" data-i18n="[placeholder]users.label.username" />
-  </div>
-  <div class="form-row">
-    <label><i class="fa fa-lock"></i> <span>Password</span></label>
-    <input type="text"  id="node-config-input-users-password" data-i18n="[placeholder]users.label.password" />
-  </div>
-  <div class="form-row">
-    <label><i class="fa fa-user"></i> <span>User role</span></label>
-    <select id="node-config-input-users-role">
-      <option value="user" selected>User</option>
-      <option value="admin">Admin</option>
-    </select>
-  </div>
-  <div class="form-row">
-    <a href="#" class="editor-button" id="node-input-add-option"><i class="fa fa-plus"></i><span>Add user to whitelist</span></a>
+  <div class='form-row'>
+    <a href="#" onclick="RED.sidebar.show('nodeUsers'); $('#node-config-dialog-cancel').click(); return false" class="editor-button">Open node users</a>
   </div>
 
 </script>
@@ -84,30 +71,142 @@
       jwtSecret: {value: ""},
       nodeUsers: {value: []}
     },
-    inputs: 0,
-    outputs: 0,
+    hasUsers: false,
+    plaetteLabel: 'Node Users',
     label: function () {
       return this.name || "Node users";
     },
-    oneditprepare: function () {
-      var node = this;
-      var nodeUsersList = $(".node-input-users-container-row > ul");
+    onpaletteremove: function() {
+        RED.sidebar.removeTab("nodeUsers");
+        RED.events.off("editor:save",editSaveEventHandler);
+    },
+    onpaletteadd: function () {
+      var globalUserConfigNode = null;
 
-      function generateJwtSecret() {
-        var jwtChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        var jwtSecretGenerated = '';
-        for (var i = 32; i > 0; --i) {
-          jwtSecretGenerated += jwtChars[Math.floor(Math.random() * jwtChars.length)]
-        };
-        return jwtSecretGenerated;
+      var content = $("<div>", {class: "node-users-config-wrapper"});
+
+      var title = $("<h4>").text("Node Users Configuration").appendTo(content);
+
+      var jwtForm = $("<div>", {class: "form-row"}).appendTo(content);
+      var jwtLabel = $("<label>", {for: "node-config-input-jwtSecret"}).text("JWT secret").appendTo(jwtForm);
+      var jwtInput = $("<input>", {type: "text", id: "node-config-input-jwtSecret", "placeholder": "JWT secret"}).appendTo(jwtForm);
+      var jwtGenerateBtn = $("<button>", {id: "generate-jwt-secret", class: "editor-button editor-button-small"}).text("Regenerate secret").appendTo(jwtForm);
+      var jwtGenerateBtnIcon = $("<i>", {class: "fa fa-refresh"}).prependTo(jwtGenerateBtn);
+
+      var alertInfo = $("<div>", {class: "form-row alert alert-info"}).text("Create a list of users who are authorized.").appendTo(content);
+      var nodeUsersContainer = $("<div>", {class: "form-row node-input-users-container-row"}).appendTo(content);
+      var nodeUsersList = $("<ul>").appendTo(nodeUsersContainer);
+
+      var usernameForm = $("<div>", {class: "form-row"}).appendTo(content);
+      var usernameLabel = $("<label>", {for: "node-config-input-users-username"}).text("Username").appendTo(usernameForm);
+      var usernameInput = $("<input>", {type: "text", id: "node-config-input-users-username", "placeholder": "Username"}).appendTo(usernameForm);
+      
+      var passwordForm = $("<div>", {class: "form-row"}).appendTo(content);
+      var passwordLabel = $("<label>", {for: "node-config-input-users-password"}).text("Password").appendTo(passwordForm);
+      var passwordInput = $("<input>", {type: "text", id: "node-config-input-users-password", "placeholder": "Password"}).appendTo(passwordForm);
+      
+
+      var roleForm = $("<div>", {class: "form-row"}).appendTo(content);
+      var roleLabel = $("<label>", {for: "node-config-input-users-role"}).text("User Role").appendTo(roleForm);
+      var roleInput = $("<select>", {id: "node-config-input-users-role"}).appendTo(roleForm);
+      var roleOptionsUser = $("<option>", {value: "user", selected: "selected"}).text("User").appendTo(roleInput);
+      var roleOptionsAdmin = $("<option>", {value: "admin"}).text("Admin").appendTo(roleInput);
+    
+      var addUserBtn = $("<a>", {href: "#", class: "editor-button", id: "node-input-add-option"}).appendTo(content);
+      var addUserBtnIcon = $("<i>", {class: "fa fa-plus"}).appendTo(addUserBtn);
+      var addUserBtnText = $("<span>").text("Add user to whitelist").appendTo(addUserBtn);
+
+      function getNodeUsers() {
+        var nodeUsers = [];
+        $(".node-input-users-container-row > ul > li").each(function () {
+          var item = $(this);
+          nodeUsers.push({
+            username: item.data('username').toString(),
+            password: item.data("hash").toString(),
+            role: item.data("role")
+          });
+        });
+        return nodeUsers;
       }
 
-      function renderUserRow (user) {
+      function save() {
+        var jwtSecret = $("#node-config-input-jwtSecret").val();
+        var nodeUsers = getNodeUsers();
+        // If there is no config node, ensure we create it after initialising
+        if (globalUserConfigNode === null) {
+          globalUserConfigNode = {
+            id: RED.nodes.id(),
+            _def: RED.nodes.getType("users_config"),
+            type: "users_config",
+            jwtSecret: jwtSecret,
+            nodeUsers: nodeUsers,
+            users: []
+          }
+          RED.nodes.add(globalUserConfigNode);
+        } else {
+          globalUserConfigNode["_def"] = RED.nodes.getType("users_config");
+          globalUserConfigNode.jwtSecret = jwtSecret;
+          globalUserConfigNode.nodeUsers = nodeUsers;
+          delete globalUserConfigNode.name;
+        }
+        RED.nodes.dirty(true);
+      }
+
+      function initUsersConfigNode() { // Behaviour based on node-red-dashboard
+        if (globalUserConfigNode !== null) {
+          // Check if it has been deleted beneath us
+          var n = RED.nodes.node(globalUserConfigNode.id);
+          if (n === null) {
+            globalUserConfigNode = null;
+          }
+        }
+        // Find the old config node
+        if (globalUserConfigNode === null) {
+          var bases = [];
+          RED.nodes.eachConfig(function(n) {
+            if (n.type === 'users_config') {
+              bases.push(n);
+            }
+          });
+          // make sure we only have one users_config node
+          while (bases.length > 1) {
+            var n = bases.pop();
+            RED.nodes.remove(n.id);
+            RED.nodes.dirty(true);
+          }
+          if (bases.length === 1) {
+            globalUserConfigNode = bases[0];
+          }
+
+          if (globalUserConfigNode !== null) {
+            globalUserConfigNode.nodeUsers.forEach(function (u) {
+              renderUserRow(u);
+            });
+            $("#node-config-input-jwtSecret").val(globalUserConfigNode.jwtSecret);  
+          }
+
+          if ($("#node-config-input-jwtSecret").val() === "") {
+            $("#node-config-input-jwtSecret").val(generateJwtSecret());
+            save();
+          }
+        }
+      }
+
+      function generateJwtSecret() {
+        var len = 32;
+        var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var secret = '';
+        for (var i = len; i > 0; --i) {
+          secret += chars[Math.floor(Math.random() * chars.length)]
+        };
+        return secret;
+      }
+
+      function renderUserRow(user) {
         var listItem = $("<li />", {
           "data-username": user.username, 
           "data-role": user.role, 
-          "data-hash": user.password, 
-          // "data-dirty": user.dirty
+          "data-hash": user.password
         });
         var username = $("<span />", {"class": "users-username"}).appendTo(listItem);
         var role = $("<span />", {"class": "users-role"}).appendTo(listItem);
@@ -118,10 +217,12 @@
         nodeUsersList.append(listItem);
       }
 
-      if (node.nodeUsers) {
-        node.nodeUsers.forEach(function (u) {
-          renderUserRow(u);
-        });
+      function isUserAdded(username) {
+        var nodeUsersList = $(".node-input-users-container-row > ul > li");
+        var exists = nodeUsersList.filter(function () {
+          return $(this).data("username") === username;
+        }).length > 0;
+        return exists;
       }
 
       $(document).on("click", ".node-input-users-container-row > ul > li > a", function () {
@@ -129,46 +230,51 @@
         $(".node-input-users-container-row > ul > li").each(function () {
           if ($(this).data("username") === username) {
             $(this).remove();
+            save();
           }
         });
       });
 
-      $("#node-input-add-option").click(function () {
-        //TODO: validate input
+      $(document).on("click", "#node-input-add-option", function () {
         var user = {
           username: $("#node-config-input-users-username").val(),
           password: $("#node-config-input-users-password").val(),
-          role: $("#node-config-input-users-role").val(),
-          // dirty: true
+          role: $("#node-config-input-users-role").val()
         };
-        if (user.username === "" || user.password === "") {
+        if (user.username === "" || user.password === "" || isUserAdded(user.username) === true) {
           return;
         }
         $("#node-config-input-users-username").val("");
         $("#node-config-input-users-password").val("");
         $("#node-config-input-users-role").val("user");
+
         renderUserRow(user);
+        save();
       });
 
-      if ($("#node-config-input-jwtSecret").val() === "") {
+      $(document).on("blur", "#node-config-input-jwtSecret", function () {
+        if ($(this).val() === "") {
+          $("#node-config-input-jwtSecret").val(generateJwtSecret());
+        }
+        save(); 
+      });
+
+      $(document).on("click", "#generate-jwt-secret", function () {
         $("#node-config-input-jwtSecret").val(generateJwtSecret());
-      }
-
-    },
-    oneditsave: function () {
-      var node = this;
-      var nodeUsersList = $(".node-input-users-container-row > ul > li");
-      var nodeUsers = [];
-      nodeUsersList.each(function () {
-        var item = $(this);
-        nodeUsers.push({
-          username: item.data('username').toString(),
-          password: item.data("hash").toString(),
-          role: item.data("role"),
-          // dirty: item.data("dirty")
-        });
+        save();
       });
-      node.nodeUsers = nodeUsers;
-    }
+
+      RED.sidebar.addTab({
+        id: "nodeUsers",
+        label: "node users",
+        name: "Node users",
+        content: content,
+        closeable: true,
+        disableOnEdit: true,
+        onchange: function() { 
+          initUsersConfigNode();
+        }
+      });
+    },
   });
 </script>

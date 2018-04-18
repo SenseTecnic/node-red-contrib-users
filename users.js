@@ -12,13 +12,6 @@ var inited = false;
 var log,
   usersConfig;
 
-function createJwtToken(req, res, jwtSecret, jwtCookieName, payload) {
-  var token = jwt.sign(payload, jwtSecret);
-  res.cookie(jwtCookieName, token, {
-    maxAge: JWT_COOKIE_EXPIRY
-  });
-}
-
 function getTokenFromRequest(req) {
   var header = req.headers.cookie;
   // read from cookie header
@@ -28,18 +21,25 @@ function getTokenFromRequest(req) {
   }
 }
 
-function verifyJwt(req, jwtSecret) {
+function verifyJwt(req) {
   var jwtCookie = getTokenFromRequest(req);
   if (!jwtCookie) {
     log.trace("Node users: jwt cookie not found");
     return false;
   }
   try {
-    return jwt.verify(jwtCookie, jwtSecret); 
+    return jwt.verify(jwtCookie, usersConfig.jwtSecret);
   } catch (err) {
     log.trace("Node users: " + err);
     return false;
   }
+}
+
+function createJwtToken(req, res, jwtSecret, jwtCookieName, payload) {
+  var token = jwt.sign(payload, jwtSecret);
+  res.cookie(jwtCookieName, token, {
+    maxAge: JWT_COOKIE_EXPIRY
+  });
 }
 
 function clearJwt(res) {
@@ -47,11 +47,11 @@ function clearJwt(res) {
 }
 
 function handleLogin(req, res) {
-  if (!usersConfig) {
-    return res.status("500").send("Node users not initialized");
+  if (!usersConfig  || !usersConfig.jwtSecret) {
+    log.error("Node users: missing or incomplete users config");
+    return res.status(503).send("Node users not initialized");
   }
-  // TODO: move to separate controller
-  var returnUrl = req.query.return;
+
   var username = req.body.username;
   var password = req.body.password;
 
@@ -78,9 +78,9 @@ function handleLogout(req, res) {
   var returnUrl = req.query.return;
   clearJwt(res);
   if (returnUrl) {
-    res.redirect(returnUrl);
+    res.status(301).redirect(returnUrl);
   } else {
-    res.sendFile(path.join(APP_DIR, 'login.html'));
+    res.status(301).redirect(APP_PATH);
   }
 }
 
@@ -99,8 +99,7 @@ function init(server, app, _log, redSettings) {
   app.use(path.join(APP_PATH, 'static'), serveStatic(path.join(APP_DIR, 'static')));
 
   app.get(path.join(APP_PATH, '/'), function (req, res) {
-    var payload = verifyJwt(req, usersConfig.jwtSecret);
-
+    var payload = verifyJwt(req);
     if (payload) {
       res.sendFile(path.join(APP_DIR, 'index.html'));
     } else {
@@ -111,10 +110,14 @@ function init(server, app, _log, redSettings) {
   log.info("Node users started " + fullPath);
 }
 
-module.exports = function(RED, _usersConfig) {
-  if (!inited) {
-    inited = true;
-    init(RED.server, RED.httpAdmin, RED.log, RED.settings);
-  }
-  usersConfig = _usersConfig;
+
+module.exports = {
+  init: function (RED, _usersConfig) {
+    if (!inited) {
+      inited = true;
+      init(RED.server, RED.httpAdmin, RED.log, RED.settings);
+    }
+    usersConfig = _usersConfig;
+  },
+  verify: verifyJwt
 };
