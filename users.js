@@ -1,6 +1,7 @@
 var path = require('path');
 var jwt = require('jsonwebtoken');
 var cookie = require('cookie');
+var crypto = require('crypto');
 var serveStatic = require('serve-static');
 
 var APP_DIR = path.join(__dirname, './app');
@@ -28,7 +29,7 @@ function verifyJwt(req) {
     return false;
   }
   try {
-    return jwt.verify(jwtCookie, usersConfig.jwtSecret);
+    return jwt.verify(jwtCookie, usersConfig.credentials.jwtSecret);
   } catch (err) {
     log.trace("Node users: Failed to verify jwt - " + err);
     return false;
@@ -46,29 +47,39 @@ function clearJwt(res) {
   res.clearCookie(JWT_COOKIE_NAME);
 }
 
+function hash(username, password) {
+  // username is used as part of the salt for the hash
+  var hash = crypto.createHash('sha512').update(password+"."+username, 'utf8').digest('hex');
+  return hash;
+}
+
+function getUser(username, password) {
+  var user = usersConfig.credentials.nodeUsers.filter(function (u) {
+    return u.username === username && u.password === hash(username, password);
+  })[0];
+  return user;
+}
+
 function handleLogin(req, res) {
-  if (!usersConfig  || !usersConfig.jwtSecret) {
+  if (!usersConfig  || !usersConfig.credentials || !usersConfig.credentials.jwtSecret) {
     log.error("Node users: missing or incomplete users config");
     return res.status(503).send("Node users not initialized");
   }
 
   var username = req.body.username;
   var password = req.body.password;
+  var user = getUser(username, password);
 
-  var user = usersConfig.nodeUsers.filter(function (u) {
-    return u.username === username && u.password === password;
-  })[0];
-
-  if (user === undefined) {
+  if (!user) {
     res.status(401).send('Unauthorized');
     return;
   }
 
   log.debug('Authenticated node user:'+user.username);
 
-  createJwtToken(req, res, usersConfig.jwtSecret, JWT_COOKIE_NAME, {
+  createJwtToken(req, res, usersConfig.credentials.jwtSecret, JWT_COOKIE_NAME, {
     username: user.username,
-    role: user.role
+    scope: user.scope
   });
 
   res.status(204).send();

@@ -7,38 +7,36 @@ module.exports = function (RED) {
     var node = this;
     node.status({});
 
-    var config = null;
+    var config;
 
     RED.nodes.eachNode(function (n) {
       if (n.type === "users_config") {
-        config = n;
+        config = RED.nodes.getCredentials(n.id);
       }
     });
 
-    if (config === null) {
+    // var nodeUsers = RED.nodes.getCredentials(config.id).nodeUsers;
+
+    if (!config) {
       node.error(RED._("users.errors.missing-users-config"));
       node.status({fill: "red", shape: "ring", text: RED._("users.errors.missing-users-config")});
+      return;
     }
-    if (config.nodeUsers.length === 0) {
-      node.error(RED._("users.errors.empty-users-list"));
-      node.status({fill: "red", shape: "ring", text: RED._("users.errors.empty-users-list")});
+    if (!config.nodeUsers) {
+      node.error(RED._("users.errors.missing-users-list"));
+      node.status({fill: "red", shape: "ring", text: RED._("users.errors.missing-users-list")});
+      return;
     }
     if (!config.jwtSecret) {
       node.error(RED._("users.errors.missing-jwt-secret"));
       node.status({fill: "red", shape: "ring", text: RED._("users.errors.missing-jwt-secret")});
+      return;
     }
-
-    node.usersConfig = config;
 
     node.on('input', function (msg) {
       if (!msg.req || !msg.res) {
         node.error(RED._("users.errors.http-node-required"), msg);
         node.status({fill: "red", shape: "ring", text: RED._("users.errors.http-node-required-status")});
-        return;
-      }
-      if (!node.usersConfig) {
-        node.error(RED._("users.errors.missing-users-config"), msg);
-        node.status({fill: "red", shape: "ring", text: RED._("users.errors.missing-users-config")});
         return;
       }
 

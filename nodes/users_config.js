@@ -5,19 +5,28 @@ module.exports = function (RED) {
   function UsersConfig(n) {
     RED.nodes.createNode(this,n);
     var node = this;
+    var credentials = RED.nodes.getCredentials(n.id);
 
-    if (n.nodeUsers === undefined) {
+    if (credentials === undefined) {
       node.error(RED._("users.errors.missing-users-config"));
     }
 
-    if (!n.jwtSecret) {
+    if (!credentials.nodeUsers) {
+      node.error(RED._("users.errors.missing-users-list"));
+    }
+
+    if (!credentials.jwtSecret) {
       node.error(RED._("users.errors.missing-jwt-secret"));
     }
 
-    users.init(RED, n);
-    node.nodeUsers = n.nodeUsers;
-    node.jwtSecret = n.jwtSecret;
+    node.credentials = credentials;
+    users.init(RED, node);
   }
 
-  RED.nodes.registerType("users_config", UsersConfig);
+  RED.nodes.registerType("users_config", UsersConfig, {
+    credentials: {
+      jwtSecret: {type: "text"},
+      nodeUsers: {type: "text"}
+    }
+  });
 };

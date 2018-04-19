@@ -4,7 +4,7 @@
       "missing-users-config": "Node users config is not set",
       "http-node-required": "Message does not contain req and res objects. Please use http in node as input.",
       "http-node-required-status": "Missing req and res in msg",
-      "empty-users-list": "Allowed users list is empty",
+      "missing-users-list": "Allowed users list is not set",
       "missing-jwt-secret": "JWT secret is not set"
     }
   }

@@ -11,8 +11,9 @@
       "jwtSecret": "JWT Secret"
     },
     "errors": {
+      "missing-users-config": "Node users config is missing",
       "missing-jwt-secret": "JWT secret is not set",
-      "missing-users-config": "Node users config is not set"
+      "missing-users-list": "Node users list is not set"
     }
   }
 }

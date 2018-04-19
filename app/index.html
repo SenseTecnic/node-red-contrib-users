@@ -15,7 +15,7 @@
   <div class="login-wrapper">
     <h3>You are logged in as</h3>
     <h1 id="username"></h1>
-    <p id="role">role: <span></span></p>
+    <p id="scope">scope: <span></span></p>
     <a id="logout-link" href="/users/logout">Logout</a>
   </div>
 
@@ -46,7 +46,7 @@
     var token = readCookie('nr.nodeUsers.jwt');
     var payload = parseJwt(token);
     $("#username").text(payload.username);
-    $("#role > span").text(payload.role);
+    $("#scope > span").text(payload.scope);
 
     var returnUrl = getParameterByName('return');
     if (returnUrl) {
