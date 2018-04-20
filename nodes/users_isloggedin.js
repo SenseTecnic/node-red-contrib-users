@@ -1,3 +1,4 @@
+var path = require('path');
 var users = require('../users');
 
 module.exports = function (RED) {
@@ -6,6 +7,7 @@ module.exports = function (RED) {
     RED.nodes.createNode(this,n);
     var node = this;
     node.status({});
+    node.enableCustomHandler = n.enableCustomHandler;
 
     var config;
 
@@ -14,8 +16,6 @@ module.exports = function (RED) {
         config = RED.nodes.getCredentials(n.id);
       }
     });
-
-    // var nodeUsers = RED.nodes.getCredentials(config.id).nodeUsers;
 
     if (!config) {
       node.error(RED._("users.errors.missing-users-config"));
@@ -48,7 +48,14 @@ module.exports = function (RED) {
         node.send([msg, null]);
       } else {
         node.status({fill: "yellow", shape: "dot", text: "Unauthorized"});
-        node.send([null, msg]);
+
+        if (node.enableCustomHandler) {
+          node.send([null, msg]);
+        } else {
+          var currentUrl = msg.req.protocol + '://' + msg.req.get('host') + msg.req.originalUrl;
+          var redirectUrl = path.join(RED.settings.httpNodeRoot, users.getPath())+"?return="+currentUrl;
+          msg.res.redirect(redirectUrl);
+        }
       }
     });
   }

@@ -1,6 +1,6 @@
 <style>
 .node-users-config-wrapper {
-  margin: 20px;
+  margin: 10px;
 }
 .node-users-config-wrapper input {
   width: 100%;
@@ -8,6 +8,32 @@
 }
 .node-users-config-wrapper label {
   font-weight: bold;
+  width: 100%;
+}
+.node-users-config-wrapper .form-row.user-row label {
+  font-weight: bold;
+  display: inline-block;
+  width: 65px;
+  margin-right: 10px;
+}
+.node-users-config-wrapper .form-row.user-row input {
+  width: calc(100% - 75px);
+  margin-bottom: 0;
+  display: inline-block;
+}
+.node-users-config-wrapper .form-row.checkbox-row {
+  margin-bottom: 15px;
+}
+.node-users-config-wrapper .form-row.checkbox-row label {
+  display: inline-block;
+  width: auto;
+  font-weight: normal;
+}
+.node-users-config-wrapper .form-row.checkbox-row input[type=checkbox] {
+  display: inline-block;
+  margin: 3px 7px 0 0px;
+  vertical-align: top;
+  width: auto;
 }
 .node-input-users-container-row > ul {
   list-style: none;
@@ -43,7 +69,7 @@
 .node-input-add-users-container-row {
 }
 #node-input-add-option {
-  margin-top: 10px;
+  margin: 5px 0 20px 0;
 }
 #generate-jwt-secret i,
 #node-input-add-option i {
@@ -59,9 +85,7 @@
   <div class='form-row'>
     <a href="#" onclick="RED.sidebar.show('nodeUsers'); $('#node-config-dialog-cancel').click(); return false" class="editor-button">Open node users</a>
   </div>
-
 </script>
-
 
 <script type="text/javascript">
   RED.nodes.registerType('users_config', {
@@ -91,33 +115,31 @@
 
       var content = $("<div>", {class: "node-users-config-wrapper"});
 
-      var title = $("<h4>").text("Node Users Configuration").appendTo(content);
+      var alertInfo = $("<div>", {class: "form-row alert alert-info"}).text("Create a list of users who are authorized.").appendTo(content);
+      var nodeUsersContainer = $("<div>", {class: "form-row node-input-users-container-row"}).appendTo(content);
+      var nodeUsersList = $("<ul>").appendTo(nodeUsersContainer);
+
+      var usernameForm = $("<div>", {class: "form-row user-row"}).appendTo(content);
+      var usernameLabel = $("<label>", {for: "node-config-input-users-username"}).text("Username").appendTo(usernameForm);
+      var usernameInput = $("<input>", {type: "text", id: "node-config-input-users-username", "placeholder": "Username (required)"}).appendTo(usernameForm);
+      
+      var passwordForm = $("<div>", {class: "form-row user-row"}).appendTo(content);
+      var passwordLabel = $("<label>", {for: "node-config-input-users-password"}).text("Password").appendTo(passwordForm);
+      var passwordInput = $("<input>", {type: "text", id: "node-config-input-users-password", "placeholder": "Password (required)"}).appendTo(passwordForm);
+      
+      var scopeForm = $("<div>", {class: "form-row user-row"}).appendTo(content);
+      var scopeLabel = $("<label>", {for: "node-config-input-users-scope"}).text("Scope").appendTo(scopeForm);
+      var scopeInput = $("<input>", {type: "text", id: "node-config-input-users-scope", "placeholder": "Scope (optional)"}).appendTo(scopeForm);
+
+      var addUserBtn = $("<a>", {href: "#", class: "editor-button", id: "node-input-add-option"}).appendTo(content);
+      var addUserBtnIcon = $("<i>", {class: "fa fa-plus"}).appendTo(addUserBtn);
+      var addUserBtnText = $("<span>").text("Add user to whitelist").appendTo(addUserBtn);
 
       var jwtForm = $("<div>", {class: "form-row"}).appendTo(content);
       var jwtLabel = $("<label>", {for: "node-config-input-jwtSecret"}).text("JWT secret").appendTo(jwtForm);
       var jwtInput = $("<input>", {type: "text", id: "node-config-input-jwtSecret", "placeholder": "JWT secret"}).appendTo(jwtForm);
       var jwtGenerateBtn = $("<button>", {id: "generate-jwt-secret", class: "editor-button editor-button-small"}).text("Regenerate secret").appendTo(jwtForm);
       var jwtGenerateBtnIcon = $("<i>", {class: "fa fa-refresh"}).prependTo(jwtGenerateBtn);
-
-      var alertInfo = $("<div>", {class: "form-row alert alert-info"}).text("Create a list of users who are authorized.").appendTo(content);
-      var nodeUsersContainer = $("<div>", {class: "form-row node-input-users-container-row"}).appendTo(content);
-      var nodeUsersList = $("<ul>").appendTo(nodeUsersContainer);
-
-      var usernameForm = $("<div>", {class: "form-row"}).appendTo(content);
-      var usernameLabel = $("<label>", {for: "node-config-input-users-username"}).text("Username").appendTo(usernameForm);
-      var usernameInput = $("<input>", {type: "text", id: "node-config-input-users-username", "placeholder": "Username"}).appendTo(usernameForm);
-      
-      var passwordForm = $("<div>", {class: "form-row"}).appendTo(content);
-      var passwordLabel = $("<label>", {for: "node-config-input-users-password"}).text("Password").appendTo(passwordForm);
-      var passwordInput = $("<input>", {type: "text", id: "node-config-input-users-password", "placeholder": "Password"}).appendTo(passwordForm);
-      
-      var scopeForm = $("<div>", {class: "form-row"}).appendTo(content);
-      var scopeLabel = $("<label>", {for: "node-config-input-users-scope"}).text("Scope").appendTo(scopeForm);
-      var scopeInput = $("<input>", {type: "text", id: "node-config-input-users-scope", "placeholder": "Scope"}).appendTo(scopeForm);
-
-      var addUserBtn = $("<a>", {href: "#", class: "editor-button", id: "node-input-add-option"}).appendTo(content);
-      var addUserBtnIcon = $("<i>", {class: "fa fa-plus"}).appendTo(addUserBtn);
-      var addUserBtnText = $("<span>").text("Add user to whitelist").appendTo(addUserBtn);
 
       function getNodeUsers() {
         var nodeUsers = [];
@@ -146,6 +168,7 @@
 
       function save() {
         var jwtSecret = $("#node-config-input-jwtSecret").val();
+
         var nodeUsers = getNodeUsers();
 
         // If there is no config node, ensure we create it after initialising
@@ -204,6 +227,7 @@
               globalUserConfigNode.credentials.jwtSecret = data.jwtSecret;
 
               $("#node-config-input-jwtSecret").val(globalUserConfigNode.credentials.jwtSecret);
+
               var nodeUsers = globalUserConfigNode.credentials.nodeUsers;
               if (nodeUsers) {
                 nodeUsers.forEach(function (u) {

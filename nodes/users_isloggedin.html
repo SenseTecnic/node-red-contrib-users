@@ -1,13 +1,18 @@
 
 <script type="text/x-red" data-template-name="users_isloggedin">
-<!--   <div class="form-row" id="users-config-row">
-    <label for="node-input-usersConfig"><i class="fa fa-users"></i> Users Config</label>
-    <input type="text" id="node-input-usersConfig">
-  </div> -->
+
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
     <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
   </div>
+
+  <div class="form-row" style="padding-left: 100px;">
+    <input type="checkbox" id="node-input-enableCustomHandler" style="display: inline-block; width: 20px; vertical-align: top;">
+    <label for="node-input-enableCustomHandler" style="width: auto; font-weight: normal; display: inline-block;">Enable custom error output handler</label>
+    <div class="alert alert-info" style="max-width: 300px; margin-top: 15px;">By default, the node will redirect users to the default login page. By enabling the custom error handler, all requests that are not authenticated (403) will be routed to output 2 of this node.</div>
+  </div>
+
+  <input type="hidden" id="node-input-outputs">
 </script>
 
 <script type="text/x-red" data-help-name="users_isloggedin">
@@ -18,12 +23,21 @@
   RED.nodes.registerType('users_isloggedin', {
     category: 'Node Users',
     defaults: {
-      name: {value: ""}
+      name: {value: ""},
+      enableCustomHandler: {value: false},
+      outputs: {value: 1}
     },
     icon: "users.png",
     color: "#00abb0",
     inputs: 1,
-    outputs: 2,
+    outputs: 1,
+    oneditsave: function () {
+      if ($("#node-input-enableCustomHandler").is(":checked")) {
+        $("#node-input-outputs").val(2);
+      } else {
+        $("#node-input-outputs").val(1);
+      }
+    },
     label: function () {
       return this.name || "is logged in";
     }

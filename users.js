@@ -99,13 +99,9 @@ function init(server, app, _log, redSettings) {
   var fullPath = path.join(redSettings.httpAdminRoot, APP_PATH);
   log = _log;
 
-  app.post(path.join(APP_PATH, '/login'), function (req, res) {
-    handleLogin(req, res);
-  });
+  app.post(path.join(APP_PATH, '/login'), handleLogin);
 
-  app.get(path.join(APP_PATH, '/logout'), function (req, res) {
-    handleLogout(req, res);
-  });
+  app.get(path.join(APP_PATH, '/logout'), handleLogout);
 
   app.use(path.join(APP_PATH, 'static'), serveStatic(path.join(APP_DIR, 'static')));
 
@@ -129,5 +125,8 @@ module.exports = {
     }
     usersConfig = _usersConfig;
   },
-  verify: verifyJwt
+  verify: verifyJwt,
+  getPath: function () {
+    return APP_PATH;
+  }
 };
