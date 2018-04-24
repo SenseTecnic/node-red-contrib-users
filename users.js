@@ -6,7 +6,6 @@ var serveStatic = require('serve-static');
 
 var APP_DIR = path.join(__dirname, './app');
 var APP_PATH = '/users';
-var JWT_COOKIE_NAME = 'nr.nodeUsers.jwt';
 var JWT_COOKIE_EXPIRY =  604800000; // 7 days
 
 var inited = false;
@@ -18,7 +17,7 @@ function getTokenFromRequest(req) {
   // read from cookie header
   if (header) {
     var cookies = cookie.parse(header);
-    return cookies[JWT_COOKIE_NAME];
+    return cookies[usersConfig.jwtCookieName];
   }
 }
 
@@ -44,7 +43,7 @@ function createJwtToken(req, res, jwtSecret, jwtCookieName, payload) {
 }
 
 function clearJwt(res) {
-  res.clearCookie(JWT_COOKIE_NAME);
+  res.clearCookie(usersConfig.jwtCookieName);
 }
 
 function hash(username, password) {
@@ -77,7 +76,7 @@ function handleLogin(req, res) {
 
   log.debug('Authenticated node user:'+user.username);
 
-  createJwtToken(req, res, usersConfig.credentials.jwtSecret, JWT_COOKIE_NAME, {
+  createJwtToken(req, res, usersConfig.credentials.jwtSecret, usersConfig.jwtCookieName, {
     username: user.username,
     scope: user.scope
   });

@@ -9,17 +9,26 @@ module.exports = function (RED) {
 
     if (credentials === undefined) {
       node.error(RED._("users.errors.missing-users-config"));
+      return;
     }
 
     if (!credentials.nodeUsers) {
       node.error(RED._("users.errors.missing-users-list"));
+      return;
     }
 
     if (!credentials.jwtSecret) {
       node.error(RED._("users.errors.missing-jwt-secret"));
+      return;
+    }
+
+    if (!n.jwtCookieName) {
+      node.error(RED._("users.errors.missing-jwt-cookie-name"));
+      return;
     }
 
     node.credentials = credentials;
+    node.jwtCookieName = n.jwtCookieName;
     users.init(RED, node);
   }
 

@@ -1,4 +1,3 @@
-
 <script type="text/x-red" data-template-name="users_isloggedin">
 
   <div class="form-row">
@@ -9,7 +8,7 @@
   <div class="form-row" style="padding-left: 100px;">
     <input type="checkbox" id="node-input-enableCustomHandler" style="display: inline-block; width: 20px; vertical-align: top;">
     <label for="node-input-enableCustomHandler" style="width: auto; font-weight: normal; display: inline-block;">Enable custom error output handler</label>
-    <div class="alert alert-info" style="max-width: 300px; margin-top: 15px;">By default, the node will redirect users to the default login page. By enabling the custom error handler, all requests that are not authenticated (403) will be routed to output 2 of this node.</div>
+    <div class="alert alert-info" style="max-width: 300px; margin-top: 15px;">By default, the node will redirect users to the default login page at <a class="users-login-link" href="#" target="_blank"></a>. <br>By enabling the custom error handler, all requests that are not authenticated (403) will be routed to output 2 of this node.</div>
   </div>
 
   <input type="hidden" id="node-input-outputs">
@@ -27,6 +26,7 @@
       enableCustomHandler: {value: false},
       outputs: {value: 1}
     },
+    paletteLabel: "is logged in",
     icon: "users.png",
     color: "#00abb0",
     inputs: 1,
@@ -37,6 +37,12 @@
       } else {
         $("#node-input-outputs").val(1);
       }
+    },
+    oneditprepare: function () {
+      var loginUrl = document.location.host+RED.settings.httpNodeRoot+"/users";
+      var re = new RegExp('\/{1,}','g');
+      loginUrl = loginUrl.replace(re,'/');
+      $(".users-login-link").attr("href", loginUrl).text(loginUrl);
     },
     label: function () {
       return this.name || "is logged in";

@@ -13,23 +13,29 @@ module.exports = function (RED) {
 
     RED.nodes.eachNode(function (n) {
       if (n.type === "users_config") {
-        config = RED.nodes.getCredentials(n.id);
+        config = n;
+        config.credentials = RED.nodes.getCredentials(n.id);
       }
     });
 
-    if (!config) {
+    if (!config || !config.credentials) {
       node.error(RED._("users.errors.missing-users-config"));
       node.status({fill: "red", shape: "ring", text: RED._("users.errors.missing-users-config")});
       return;
     }
-    if (!config.nodeUsers) {
+    if (!config.credentials.nodeUsers) {
       node.error(RED._("users.errors.missing-users-list"));
       node.status({fill: "red", shape: "ring", text: RED._("users.errors.missing-users-list")});
       return;
     }
-    if (!config.jwtSecret) {
+    if (!config.credentials.jwtSecret) {
       node.error(RED._("users.errors.missing-jwt-secret"));
       node.status({fill: "red", shape: "ring", text: RED._("users.errors.missing-jwt-secret")});
+      return;
+    }
+    if (!config.jwtCookieName) {
+      node.error(RED._("users.errors.missing-jwt-cookie-name"));
+      node.status({fill: "red", shape: "ring", text: RED._("users.errors.missing-jwt-cookie-name")});
       return;
     }
 
@@ -54,7 +60,7 @@ module.exports = function (RED) {
         } else {
           var currentUrl = msg.req.protocol + '://' + msg.req.get('host') + msg.req.originalUrl;
           var redirectUrl = path.join(RED.settings.httpNodeRoot, users.getPath())+"?return="+currentUrl;
-          msg.res.redirect(redirectUrl);
+          msg.res.redirect(redirectUrl); // TODO: fix deprecation warning
         }
       }
     });

@@ -5,6 +5,7 @@
       "http-node-required": "Message does not contain req and res objects. Please use http in node as input.",
       "http-node-required-status": "Missing req and res in msg",
       "missing-users-list": "Allowed users list is not set",
+      "missing-jwt-cookie-name": "JWT cookie name is not set",
       "missing-jwt-secret": "JWT secret is not set"
     }
   }
