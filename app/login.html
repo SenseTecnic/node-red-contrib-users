@@ -55,7 +55,7 @@
         username: username,
         password: password
       };
-      $.post('/users/login', cred).done(function () {
+      $.post('/users', cred).done(function () {
         showResponse("Login success! Redirecting...", "success");
         setTimeout(function () {
           var returnUrl = getParameterByName('return');
@@ -64,7 +64,7 @@
           } else {
             window.location = "/users";
           }
-        }, 2000);        
+        }, 1500);        
       }).fail(function (xhr) {
         var msg = "";
         switch(xhr.status) {

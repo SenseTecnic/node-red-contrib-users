@@ -38,7 +38,8 @@ function verifyJwt(req) {
 function createJwtToken(req, res, jwtSecret, jwtCookieName, payload) {
   var token = jwt.sign(payload, jwtSecret);
   res.cookie(jwtCookieName, token, {
-    maxAge: JWT_COOKIE_EXPIRY
+    maxAge: JWT_COOKIE_EXPIRY,
+    secure: usersConfig.jwtHttpsOnly === true
   });
 }
 
@@ -98,7 +99,7 @@ function init(server, app, _log, redSettings) {
   var fullPath = path.join(redSettings.httpAdminRoot, APP_PATH);
   log = _log;
 
-  app.post(path.join(APP_PATH, '/login'), handleLogin);
+  app.post(path.join(APP_PATH, '/'), handleLogin);
 
   app.get(path.join(APP_PATH, '/logout'), handleLogout);
 

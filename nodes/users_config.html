@@ -79,6 +79,17 @@
 #generate-jwt-secret {
   margin-top: 7px;
 }
+#node-config-input-httpsOnly {
+  width: auto;
+  display: inline-block;
+  vertical-align: top;
+}
+#node-config-input-httpsOnly + label {
+  display: inline-block;
+  margin-left: 5px;
+  width: auto;
+  vertical-align: top;
+}
 .jwt-form-toggle {
   display: block;
   margin: 10px 0 15px 0;
@@ -109,7 +120,8 @@
     category: 'config',
     defaults: {
       name: {value: ""},
-      jwtCookieName: {value: ""}
+      jwtCookieName: {value: ""},
+      jwtHttpsOnly: {value: false}
     },
     credentials: {
       jwtSecret: {value: ""},
@@ -169,6 +181,10 @@
       var jwtGenerateBtn = $("<button>", {id: "generate-jwt-secret", class: "editor-button editor-button-small"}).text("Regenerate secret").appendTo(jwtSecretForm);
       var jwtGenerateBtnIcon = $("<i>", {class: "fa fa-refresh"}).prependTo(jwtGenerateBtn);
 
+      var httpsForm = $("<div>", {class: "form-row"}).appendTo(jwtFormWrapper);
+      var httpsCheckbox = $("<input>", {type: "checkbox", id:"node-config-input-httpsOnly"}).appendTo(httpsForm);
+      var httpsLabel = $("<label>", {for: "node-config-input-httpsOnly"}).text("JWT HTTPS only").attr("title", "Only send JWT cookie over secure https connection").appendTo(httpsForm);
+
       function getNodeUsers() {
         var nodeUsers = [];
         $(".node-input-users-container-row > ul > li").each(function () {
@@ -197,6 +213,7 @@
       function save() {
         var jwtSecret = $("#node-config-input-jwtSecret").val();
         var jwtCookieName = $("#node-config-input-jwtCookieName").val();
+        var jwtHttpsOnly = $("#node-config-input-httpsOnly").is(":checked");
         var nodeUsers = getNodeUsers();
 
         if (jwtSecret === "") {
@@ -211,6 +228,7 @@
             _def: RED.nodes.getType("users_config"),
             type: "users_config",
             jwtCookieName: jwtCookieName,
+            jwtHttpsOnly: jwtHttpsOnly,
             credentials: {
               jwtSecret: jwtSecret,
               nodeUsers: nodeUsers
@@ -221,6 +239,7 @@
         } else {
           globalUserConfigNode["_def"] = RED.nodes.getType("users_config");
           globalUserConfigNode.jwtCookieName = jwtCookieName;
+          globalUserConfigNode.jwtHttpsOnly = jwtHttpsOnly;
           globalUserConfigNode.credentials = {
             jwtSecret: jwtSecret,
             nodeUsers: nodeUsers
@@ -264,6 +283,7 @@
 
               $("#node-config-input-jwtSecret").val(globalUserConfigNode.credentials.jwtSecret);
               $("#node-config-input-jwtCookieName").val(globalUserConfigNode.jwtCookieName);
+              $("#node-config-input-httpsOnly").prop("checked", globalUserConfigNode.jwtHttpsOnly);
 
               var nodeUsers = globalUserConfigNode.credentials.nodeUsers;
               if (nodeUsers) {
@@ -385,10 +405,14 @@
         save();
       });
 
+      $(document).on("change", "#node-config-input-httpsOnly", function () {
+        save();
+      });
+
       RED.sidebar.addTab({
         id: "nodeUsers",
-        label: "node users",
-        name: "Node users",
+        label: "users",
+        name: "users",
         content: content,
         closeable: true,
         disableOnEdit: true,

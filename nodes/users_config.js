@@ -29,6 +29,7 @@ module.exports = function (RED) {
 
     node.credentials = credentials;
     node.jwtCookieName = n.jwtCookieName;
+    node.jwtHttpsOnly = n.jwtHttpsOnly === true;
     users.init(RED, node);
   }
 

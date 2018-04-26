@@ -49,7 +49,8 @@ module.exports = function (RED) {
       var authenticatedUser = users.verify(msg.req);
 
       if (authenticatedUser) {
-        msg.payload.nodeUser = authenticatedUser;
+        msg.payload.user = authenticatedUser;
+        msg.req.user = authenticatedUser;
         node.status({fill: "green", shape: "dot", text: "Authenticated: "+authenticatedUser.username});
         node.send([msg, null]);
       } else {
