@@ -47,7 +47,7 @@ The `is logged in` node checks the incoming request for the JWT cookie and verif
 
 ### Is it secure?
 
-We use the popular node library for JWT to generate our tokens: https://www.npmjs.com/package/jsonwebtoken. We recommend enabling https option if possible on the node config. The JWT in the cookie is not encrypted the username and scope field will be visible. **Do not store any sensitive information in the scope**.
+We use the popular node library for JWT to generate our tokens: https://www.npmjs.com/package/jsonwebtoken. Enabling the enabling https only option in users config for JWT is recommended if hosting under https.
 
 The passwords are salted and hashed on input and stored in the standard Node-RED credential flow file where they can be optionally encrypted.
 
