@@ -2,22 +2,22 @@
 
 ## Overview
 
-The goal of this node is to allow users to quickly build a very simple user system for your flows on Node-RED. The basic use case is if you (the Node-RED admin) want to open an `http in` endpoint in your flow that can only be accessed by a list of users that you configure and also be able to serve different responses depending on the username or a custom "scope" field of the user who is logged in.
+The goal of this node is to allow users to quickly build a very simple user system to control access to your http nodes on Node-RED. The basic use case is if you (the Node-RED admin) want to open an `http in` endpoint in your flow that can only be accessed by a list of users that you configure and also be able to serve different responses depending on the username or a custom "scope" field of the user who is logged in.
 
 ## Installation and Usage
 
 1. Go to your Node-RED users directory and run: `npm install node-red-contrib-users`
 2. Start Node-RED
-3. Create the allowed users list by going to the "users" tab on the right hand side of the Node-RED editor. Add users by filling in the username, password and scope (optional) and clicking the "Add user to whitelist" button.
+3. Create the allowed users list by going to the "users" tab on the right hand side of the Node-RED editor. Add users by filling in the username, password and scope (optional) and clicking the "Add user to whitelist" button. You can remove users by clicking the [x] button next to their username in the list.
 4. Deploy the flow.
 
-You should now be able to access `<settings.httpNodeRoot>/users` and see the default login page.
+You should now be able to access `<settings.httpNodeRoot>/users` and see the default login page. See example flow below.
 
 **isLoggedIn node**
 
-The `is logged in` node acts like a middleware that check and verifies the JWT token in the incoming request. It expects req and res objects in the msg input, usually from a `http in` node. If the JWT successfully passes verification, the node will add the JWT payload (username and scope) to the msg.payload.user and msg.req.user objects and pass the msg through to output #1. If verification fails (user unauthenticated), by default the node will redirect the request to the default login page at `<settings.httpNodeRoot>/users`. If the `custom error ouput handler` setting is enabled, the node will send the message to output #2 to be handled by a custom template node and http out node.
+The `is logged in` node acts like a middleware that check and verifies the json web token (JWT) in the incoming request. It expects req and res objects in the msg input, usually from a `http in` node.
 
-The payload is returned in the msg.req.user as well as the msg.payload.user
+If the JWT successfully passes verification, the node will add the JWT payload (username and scope) to the msg.payload.user and msg.req.user objects and pass the msg through to output #1. If verification fails (user unauthenticated), by default the node will redirect the request to the default login page at `<settings.httpNodeRoot>/users`. If the `custom error ouput handler` setting is enabled, the node will send the message to output #2 to be handled by a custom template node and http out node.
 
 ### Advanced settings
 
@@ -26,6 +26,8 @@ Clicking "show advanced settings" inside the users config tab will display extra
 **JWT cookie name** - Name of the browser cookie used to store the json web token.
 
 **JWT secret** - this is the key used to generated your json web token. Keep it safe, don't share it with your friends. You can use the "regenerate secret" button if you want to revoke any existing logged in users and make them re-login.
+
+**JWT HTTPS only** - enable this if Node-RED is running under HTTPS. This will make sure the JWT cookie is only delivered over a secure HTTPS connection for improved security.
 
 ### Example flow
 
@@ -45,14 +47,16 @@ The `is logged in` node checks the incoming request for the JWT cookie and verif
 
 ### Is it secure?
 
-You can read more about JSON Web Tokens (JWT) here:
-
-https://jwt.io/introduction/
-https://medium.com/vandium-software/5-easy-steps-to-understanding-json-web-tokens-jwt-1164c0adfcec
-
 We use the popular node library for JWT to generate our tokens: https://www.npmjs.com/package/jsonwebtoken. We recommend enabling https option if possible on the node config. The JWT in the cookie is not encrypted the username and scope field will be visible. **Do not store any sensitive information in the scope**.
 
 The passwords are salted and hashed on input and stored in the standard Node-RED credential flow file where they can be optionally encrypted.
+
+You can read more about JSON Web Tokens (JWT) and how it works here:
+
+https://jwt.io/introduction
+
+https://medium.com/vandium-software/5-easy-steps-to-understanding-json-web-tokens-jwt-1164c0adfcec
+
 
 ### Does this node have anything to do with the default Node-RED users login?
 
