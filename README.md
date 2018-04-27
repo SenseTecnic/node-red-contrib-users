@@ -2,7 +2,7 @@
 
 ## Overview
 
-The goal of this node is to allow users to quickly build a very simple user system to control access to your http nodes on Node-RED. The basic use case is if you (the Node-RED admin) want to open an `http in` endpoint in your flow that can only be accessed by a list of users that you configure and also be able to serve different responses depending on the username or a custom "scope" field of the user who is logged in.
+The goal of this node is to enable Node-RED admins to quickly build a very simple user access control for their http nodes. The basic use case is if you (the Node-RED admin) want to open an `http in` endpoint in your flow that can only be accessed by a list of users that you configure and also be able to serve different responses depending on the username or a custom "scope" field of the user who is logged in.
 
 ## Installation and Usage
 
