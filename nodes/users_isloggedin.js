@@ -1,6 +1,25 @@
 var path = require('path');
 var users = require('../users');
 
+
+function checkedRequiredFields(RED, node, config, msg) {
+  if (!msg.req || !msg.res) {
+    throw new Error("users.errors.http-node-required");
+  }
+  if (!config || !config.credentials) {
+    throw new Error("users.errors.missing-users-config");
+  }
+  if (!config.credentials.nodeUsers) {
+    throw new Error("users.errors.missing-users-list");
+  }
+  if (!config.credentials.jwtSecret) {
+    throw new Error("users.errors.missing-jwt-secret");
+  }
+  if (!config.jwtCookieName) {
+    throw new Error("users.errors.missing-jwt-cookie-name");
+  }
+}
+
 module.exports = function (RED) {
 
   function UsersIsLoggedInNode(n) {
@@ -18,32 +37,18 @@ module.exports = function (RED) {
       }
     });
 
-    if (!config || !config.credentials) {
-      node.error(RED._("users.errors.missing-users-config"));
-      node.status({fill: "red", shape: "ring", text: RED._("users.errors.missing-users-config")});
-      return;
-    }
-    if (!config.credentials.nodeUsers) {
-      node.error(RED._("users.errors.missing-users-list"));
-      node.status({fill: "red", shape: "ring", text: RED._("users.errors.missing-users-list")});
-      return;
-    }
-    if (!config.credentials.jwtSecret) {
-      node.error(RED._("users.errors.missing-jwt-secret"));
-      node.status({fill: "red", shape: "ring", text: RED._("users.errors.missing-jwt-secret")});
-      return;
-    }
-    if (!config.jwtCookieName) {
-      node.error(RED._("users.errors.missing-jwt-cookie-name"));
-      node.status({fill: "red", shape: "ring", text: RED._("users.errors.missing-jwt-cookie-name")});
-      return;
-    }
-
     node.on('input', function (msg) {
-      if (!msg.req || !msg.res) {
-        node.error(RED._("users.errors.http-node-required"), msg);
-        node.status({fill: "red", shape: "ring", text: RED._("users.errors.http-node-required-status")});
-        return;
+      try {
+        checkedRequiredFields(RED, node, config, msg);
+      } catch (err) {
+        node.error(RED._(err.message));
+        node.status({fill: "red", shape: "ring", text: RED._(err.message)});
+        msg.res.status(500);
+        if (node.enableCustomHandler) {
+          node.send([null, msg]);
+        } else {
+          msg.res.send("Error: invalid config");
+        }
       }
 
       var authenticatedUser = users.verify(msg.req);
