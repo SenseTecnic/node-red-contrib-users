@@ -15,7 +15,17 @@
 </script>
 
 <script type="text/x-red" data-help-name="users_isloggedin">
-  TODO
+  <h1>is logged in</h1>
+  <p>This node that acts like a middleware that check and verifies the json web token (JWT) in the incoming request (msg.req). It expects req and res objects in the msg input, usually from a "http in" node.</p>
+  <p>If the JWT successfully passes verification, the node will add the JWT payload (username and scope) to the msg.payload.user and msg.req.user objects and pass the msg through to output #1. If verification fails (user unauthenticated), by default the node will redirect the request to the default login page at `<settings.httpNodeRoot>/users`. If the `custom error ouput handler` setting is enabled, the node will send the message to output #2 to be handled by a custom template node and http out node.</p>
+  <h3>Input</h3>
+  <dl class="message-properties">
+    <dt>
+      Custom error output handler
+      <span class="property-type">boolean</span>
+    </dt>
+    <dd>If enabled, requests that fails authentication will be routed to output #2 to be handled by a custom http handler. If disabled, failed requests will be redirected to the custom login page.</dd>
+  </dl>
 </script>
 
 <script type="text/javascript">

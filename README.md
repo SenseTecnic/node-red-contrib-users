@@ -9,11 +9,23 @@ The goal of this node is to allow users to quickly build a very simple user syst
 1. Go to your Node-RED users directory and run: `npm install node-red-contrib-users`
 2. Start Node-RED
 3. Create the allowed users list by going to the "users" tab on the right hand side of the Node-RED editor. Add users by filling in the username, password and scope (optional) and clicking the "Add user to whitelist" button. You can remove users by clicking the [x] button next to their username in the list.
-4. Deploy the flow.
+4. Deploy the flow. See example flow below for usage.
 
-You should now be able to access `<settings.httpNodeRoot>/users` and see the default login page. See example flow below.
+### Default endpoints
 
-**isLoggedIn node**
+#### GET <settings.httpNodeRoot>/users
+
+Displays the default login page.
+
+#### POST <settings.httpNodeRoot>/users
+
+This will authenticate the user, create the JWT and save it in the cookie. Expects `username` and `password` in request body. Returns 200 on success and 401 if user is unauthorized.
+
+#### GET <settings.httpNodeRoot>/users/logout
+
+Logs out the user. The JWT cookie will be removed and you will be redirected to the default login page. The logout endpoint accepts the URL parameter `return` which can be used to redirect the user to a custom URL after logout (i.e. "http://localhost:1880/users/logout?return=http://www.someothersite.com").
+
+### isLoggedIn node
 
 The `is logged in` node acts like a middleware that check and verifies the json web token (JWT) in the incoming request. It expects req and res objects in the msg input, usually from a `http in` node.
 
@@ -47,16 +59,17 @@ The `is logged in` node checks the incoming request for the JWT cookie and verif
 
 ### Is it secure?
 
-We use the popular node library for JWT to generate our tokens: https://www.npmjs.com/package/jsonwebtoken. Enabling the enabling https only option in users config for JWT is recommended if hosting under https.
+Json web token (JWT) is a secure and industry standard [RFC719](https://tools.ietf.org/html/rfc7519) in representing claims between two parties. As long as the token passes verification, you can be sure that the contents of the JWT payload hasn't been tampered with. You can read more about JSON Web Tokens (JWT) and how it's used here:
 
-The passwords are salted and hashed on input and stored in the standard Node-RED credential flow file where they can be optionally encrypted.
+[Introduction to JSON Web Tokens](https://jwt.io/introduction)
 
-You can read more about JSON Web Tokens (JWT) and how it works here:
+[5 Easy Steps to Understanding JSON Web Tokens (JWT)](https://medium.com/vandium-software/5-easy-steps-to-understanding-json-web-tokens-jwt-1164c0adfcec)
 
-https://jwt.io/introduction
+We use this popular nodejs library to generate our tokens: https://www.npmjs.com/package/jsonwebtoken. Enabling the https only option in users config for JWT is recommended if hosting Node-RED under https. Do not sure any sensitive information in the scope user field since the JWT itself is not encrypted.
 
-https://medium.com/vandium-software/5-easy-steps-to-understanding-json-web-tokens-jwt-1164c0adfcec
+### How are the passwords stored?
 
+The user passwords are salted and hashed on input and stored in the standard Node-RED credential flow file where they can be optionally encrypted.
 
 ### Does this node have anything to do with the default Node-RED users login?
 
