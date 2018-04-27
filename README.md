@@ -59,7 +59,7 @@ The `is logged in` node checks the incoming request for the JWT cookie and verif
 
 ### Is it secure?
 
-Json web token (JWT) is a secure and industry standard [RFC719](https://tools.ietf.org/html/rfc7519) in representing claims between two parties. As long as the token passes verification, you can be sure that the contents of the JWT payload hasn't been tampered with. You can read more about JSON Web Tokens (JWT) and how it's used here:
+Json web token (JWT) is a secure and industry standard [RFC719](https://tools.ietf.org/html/rfc7519) in representing claims between two parties. As long as the token passes verification, you can be sure that the contents of the JWT payload hasn't been tampered with. You can read more about JWT and how it's used here:
 
 [Introduction to JSON Web Tokens](https://jwt.io/introduction)
 
