@@ -2,7 +2,7 @@
 
 ## Overview
 
-The goal of this node is to enable Node-RED admins to quickly build a very simple user access control for their http nodes. The basic use case is if you (the Node-RED admin) want to open an `http in` endpoint in your flow that can only be accessed by a list of users that you configure and also be able to serve different responses depending on the username or a custom "scope" field of the user who is logged in.
+This node allows Node-RED developers to quickly build a very simple user access control for their HTTP-based flows. Using this node, you can limit access to the HTTP endpoints (`http in` nodes) in your flows to a list of users that you configure yourself.  The node adds the current user to the request message so that you can serve different responses depending on the username or a custom "scope" field of the user who is logged in.
 
 ## Installation and Usage
 
@@ -13,13 +13,15 @@ The goal of this node is to enable Node-RED admins to quickly build a very simpl
 
 ### Default endpoints
 
+When installed the node adds the following endpoints to Node-RED:
+
 #### GET <settings.httpNodeRoot>/users
 
 Displays the default login page.
 
 #### POST <settings.httpNodeRoot>/users
 
-This will authenticate the user, create the JWT and save it in the cookie. Expects `username` and `password` in request body. Returns 200 on success and 401 if user is unauthorized.
+This will authenticate the user, create the JWT and save it in a cookie. Expects `username` and `password` in the request body. Returns 200 on success and 401 if user is unauthorized.
 
 #### GET <settings.httpNodeRoot>/users/logout
 
@@ -33,7 +35,7 @@ If the JWT successfully passes verification, the node will add the JWT payload (
 
 ### Advanced settings
 
-Clicking "show advanced settings" inside the users config tab will display extra settings for the JWT. These should be left alone as it is unless you know what you're doing.
+Clicking "show advanced settings" inside the users config tab will display extra settings for the JWT. These should be left alone unless you know what you're doing.
 
 **JWT cookie name** - Name of the browser cookie used to store the json web token.
 
