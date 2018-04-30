@@ -1,7 +1,7 @@
 {
   "name": "node-red-contrib-users",
   "version": "0.1.0",
-  "description": "A Node-RED node used to build a simple user system to control access to your http nodes on Node-RED.",
+  "description": "A node used to quickly build a simple user system to control access to your http nodes on Node-RED.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
