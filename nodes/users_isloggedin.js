@@ -64,8 +64,8 @@ module.exports = function (RED) {
         if (node.enableCustomHandler) {
           node.send([null, msg]);
         } else {
-          var currentUrl = msg.req.protocol + '://' + msg.req.get('host') + msg.req.originalUrl;
-          var redirectUrl = path.join(RED.settings.httpNodeRoot, users.getPath())+"?return="+currentUrl;
+          var currentUrl = msg.req.protocol+'://'+msg.req.get('host')+msg.req.originalUrl;
+          var redirectUrl = path.join(RED.settings.httpNodeRoot, config.appPath)+"?return="+currentUrl;
           msg.res.redirect(redirectUrl); // TODO: fix deprecation warning
         }
       }

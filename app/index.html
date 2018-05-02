@@ -6,7 +6,7 @@
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <link href="/users/static/app.css" rel="stylesheet">
+    <link href="./static/app.css" rel="stylesheet">
 
     <title>Node-RED Node Users</title>
 </head>
@@ -16,12 +16,12 @@
     <h3>You are logged in as</h3>
     <h1 id="username"></h1>
     <p id="scope">scope: <span></span></p>
-    <a id="logout-link" href="/users/logout">Logout</a>
+    <a id="logout-link" href="./logout">Logout</a>
   </div>
 
-  <script src="/users/static/jquery.min.js"></script>
+  <script src="./static/jquery.min.js"></script>
   <script>
-    function parseJwt (token) {
+    function parseJwt(token) {
       var base64Url = token.split('.')[1];
       var base64 = base64Url.replace('-', '+').replace('_', '/');
       return JSON.parse(window.atob(base64));
@@ -50,7 +50,7 @@
 
     var returnUrl = getParameterByName('return');
     if (returnUrl) {
-      $("#logout-link").attr("href", "/users/logout?return="+returnUrl);
+      $("#logout-link").attr("href", "./logout?return="+returnUrl);
     }
   </script>
 </body>

@@ -6,7 +6,7 @@
 
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <link href="/users/static/app.css" rel="stylesheet">
+  <link href="static/app.css" rel="stylesheet">
 
   <title>Node-RED Node Users</title>
 </head>
@@ -28,7 +28,7 @@
 
   </div>
 
-  <script src="/users/static/jquery.min.js"></script>
+  <script src="static/jquery.min.js"></script>
   <script>
     var responseTimer;
 
@@ -55,14 +55,14 @@
         username: username,
         password: password
       };
-      $.post('/users', cred).done(function () {
+      $.post('./', cred).done(function () {
         showResponse("Login success! Redirecting...", "success");
         setTimeout(function () {
           var returnUrl = getParameterByName('return');
           if (returnUrl) {
             window.location = returnUrl;  
           } else {
-            window.location = "/users";
+            window.location = "";
           }
         }, 1500);        
       }).fail(function (xhr) {

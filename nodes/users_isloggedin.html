@@ -8,7 +8,7 @@
   <div class="form-row" style="padding-left: 100px;">
     <input type="checkbox" id="node-input-enableCustomHandler" style="display: inline-block; width: 20px; vertical-align: top;">
     <label for="node-input-enableCustomHandler" style="width: auto; font-weight: normal; display: inline-block;">Enable custom error output handler</label>
-    <div class="alert alert-info" style="max-width: 300px; margin-top: 15px;">By default, the node will redirect users to the default login page at <a class="users-login-link" href="#" target="_blank"></a>. <br>By enabling the custom error handler, all requests that are not authenticated (403) will be routed to output 2 of this node.</div>
+    <div class="alert alert-info" style="max-width: 300px; margin-top: 15px;">By default, the node will redirect users to the default login page at <strong><a class="users-login-link" target="_blank"></a></strong>. <br/><br/>By enabling the custom error handler, all requests that are not authenticated (403) will be routed to output 2 of this node.</div>
   </div>
 
   <input type="hidden" id="node-input-outputs">
@@ -17,7 +17,7 @@
 <script type="text/x-red" data-help-name="users_isloggedin">
   <h1>is logged in</h1>
   <p>This node that acts like a middleware that check and verifies the json web token (JWT) in the incoming request (msg.req). It expects req and res objects in the msg input, usually from a "http in" node.</p>
-  <p>If the JWT successfully passes verification, the node will add the JWT payload (username and scope) to the msg.payload.user and msg.req.user objects and pass the msg through to output #1. If verification fails (user unauthenticated), by default the node will redirect the request to the default login page at `<settings.httpNodeRoot>/users`. If the `custom error ouput handler` setting is enabled, the node will send the message to output #2 to be handled by a custom template node and http out node.</p>
+  <p>If the JWT successfully passes verification, the node will add the JWT payload (username and scope) to the msg.payload.user and msg.req.user objects and pass the msg through to output #1. If verification fails (user unauthenticated), by default the node will redirect the request to the default login page at "/users". If the "custom error ouput handler" setting is enabled, the node will send the message to output #2 to be handled by a custom template node and http out node.</p>
   <h3>Input</h3>
   <dl class="message-properties">
     <dt>
@@ -49,9 +49,20 @@
       }
     },
     oneditprepare: function () {
-      var loginUrl = document.location.host+RED.settings.httpNodeRoot+"/users";
+      var bases = [];
+      RED.nodes.eachConfig(function(n) {
+        if (n.type === 'users_config') {
+          bases.push(n);
+        }
+      });
+      var config = bases[0];
+      var appPath = config ? config.appPath: "/users";
+      var nodeRoot = RED.settings.httpNodeRoot;
+      var loginUrl = document.location.host+nodeRoot+appPath;
       var re = new RegExp('\/{1,}','g');
       loginUrl = loginUrl.replace(re,'/');
+      loginUrl = document.location.protocol+"//"+loginUrl;
+
       $(".users-login-link").attr("href", loginUrl).text(loginUrl);
     },
     label: function () {

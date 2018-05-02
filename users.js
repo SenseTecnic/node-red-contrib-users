@@ -2,14 +2,12 @@ var path = require('path');
 var jwt = require('jsonwebtoken');
 var cookie = require('cookie');
 var crypto = require('crypto');
-var serveStatic = require('serve-static');
 
 var APP_DIR = path.join(__dirname, './app');
-var APP_PATH = '/users';
 var JWT_COOKIE_EXPIRY =  604800000; // 7 days
 
-var inited = false;
 var log,
+  redSettings,
   usersConfig;
 
 function getTokenFromRequest(req) {
@@ -91,21 +89,42 @@ function handleLogout(req, res) {
   if (returnUrl) {
     res.status(301).redirect(returnUrl);
   } else {
-    res.status(301).redirect(APP_PATH);
+    returnUrl = redSettings.httpNodeRoot+usersConfig.appPath;
+    var re = new RegExp('\/{1,}','g');
+    returnUrl = returnUrl.replace(re,'/');
+    res.status(301).redirect(returnUrl);
   }
 }
 
+function appendTrailingSlash(req, res, next) {
+  if (req.originalUrl.slice(-1) !== '/') {
+    res.redirect(req.originalUrl + '/');
+    return;
+  }
+  next();
+}
+
 function init(server, app, _log, redSettings) {
-  var fullPath = path.join(redSettings.httpAdminRoot, APP_PATH);
   log = _log;
 
-  app.post(path.join(APP_PATH, '/'), handleLogin);
+  if (!usersConfig.appPath) {
+    log.error("Node users config not initialized");
+    return;
+  }
 
-  app.get(path.join(APP_PATH, '/logout'), handleLogout);
+  app.get(path.join(usersConfig.appPath, 'static/app.css'), function (req, res) {
+    res.sendFile(path.join(APP_DIR, 'static', 'app.css'));
+  });
 
-  app.use(path.join(APP_PATH, 'static'), serveStatic(path.join(APP_DIR, 'static')));
+  app.get(path.join(usersConfig.appPath, 'static/jquery.min.js'), function (req, res) {
+    res.sendFile(path.join(APP_DIR, 'static', 'jquery.min.js'));
+  });
 
-  app.get(path.join(APP_PATH, '/'), function (req, res) {
+  app.post(usersConfig.appPath, handleLogin);
+
+  app.get(path.join(usersConfig.appPath, 'logout'), handleLogout);
+
+  app.get(usersConfig.appPath, appendTrailingSlash, function (req, res) {
     var payload = verifyJwt(req);
     if (payload) {
       res.sendFile(path.join(APP_DIR, 'index.html'));
@@ -114,19 +133,31 @@ function init(server, app, _log, redSettings) {
     }
   });
 
+  var fullPath = path.join(redSettings.httpNodeRoot, usersConfig.appPath);
   log.info("Node users started " + fullPath);
 }
 
 module.exports = {
   init: function (RED, _usersConfig) {
-    if (!inited) {
-      inited = true;
-      init(RED.server, RED.httpAdmin, RED.log, RED.settings);
-    }
     usersConfig = _usersConfig;
+    redSettings = RED.settings;
+
+    usersConfig.on("close",function() {
+      // clean up routes created by this node on close
+      var node = this;
+      var routes = RED.httpNode._router.stack;
+
+      for(var i=0; i<routes.length; i++) {
+        var r = routes[i].route;
+        var rgx = new RegExp("^"+node.appPath);
+        if (r && rgx.test(r.path)) {
+          routes.splice(i,1);
+          i--;
+        }
+      }
+    });
+
+    init(RED.server, RED.httpNode, RED.log, RED.settings);
   },
-  verify: verifyJwt,
-  getPath: function () {
-    return APP_PATH;
-  }
+  verify: verifyJwt
 };

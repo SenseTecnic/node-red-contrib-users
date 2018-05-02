@@ -30,6 +30,7 @@ module.exports = function (RED) {
     node.credentials = credentials;
     node.jwtCookieName = n.jwtCookieName;
     node.jwtHttpsOnly = n.jwtHttpsOnly === true;
+    node.appPath = n.appPath || '/users';
     users.init(RED, node);
   }
 

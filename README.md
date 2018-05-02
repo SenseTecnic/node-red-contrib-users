@@ -11,7 +11,7 @@ This node allows Node-RED developers to quickly build a very simple user access 
 3. Create the allowed users list by going to the "users" tab on the right hand side of the Node-RED editor. Add users by filling in the username, password and scope (optional) and clicking the "Add user to whitelist" button. You can remove users by clicking the [x] button next to their username in the list.
 4. Deploy the flow. See example flow below for usage.
 
-### Default endpoints
+### Default URL endpoints
 
 When installed the node adds the following endpoints to Node-RED:
 
@@ -35,9 +35,11 @@ If the JWT successfully passes verification, the node will add the JWT payload (
 
 ### Advanced settings
 
-Clicking "show advanced settings" inside the users config tab will display extra settings for the JWT. These should be left alone unless you know what you're doing.
+Clicking "show advanced settings" inside the users config tab will display custom options for the default URL and JWT. These should be left alone unless you know what you're doing.
 
-**JWT cookie name** - Name of the browser cookie used to store the json web token.
+**Base URL path** - the base path used for the default login and logout endpoints. Default: `/users`.
+
+**JWT cookie name** - name of the browser cookie used to store the json web token.
 
 **JWT secret** - this is the key used to generated your json web token. Keep it safe, don't share it with your friends. You can use the "regenerate secret" button if you want to revoke any existing logged in users and make them re-login.
 
