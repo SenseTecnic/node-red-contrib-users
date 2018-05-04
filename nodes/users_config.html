@@ -148,8 +148,10 @@
       var globalUserConfigNode = null;
 
       var content = $("<div>", {class: "node-users-config-wrapper"});
+      
+      var helpInfo  = $("<div>", {class: "form-row alert alert-info"}).html("Create a list of users who are authorized. The default login page can be accessed at:<br>").appendTo(content);
+      var loginLink = $("<a>", {class: "users-login-link"}).attr("target", "_blank").appendTo(helpInfo);
 
-      var alertInfo = $("<div>", {class: "form-row alert alert-info"}).text("Create a list of users who are authorized.").appendTo(content);
       var nodeUsersContainer = $("<div>", {class: "form-row node-input-users-container-row"}).appendTo(content);
       var nodeUsersList = $("<ul>").appendTo(nodeUsersContainer);
 
@@ -213,6 +215,17 @@
             scope: u.scope
           };
         });
+      }
+
+      function getLoginUrl(config) {
+        var appPath = config ? config.appPath: "/users";
+        var nodeRoot = RED.settings.httpNodeRoot;
+        var loginUrl = document.location.host+nodeRoot+appPath;
+        var re = new RegExp('\/{1,}','g');
+        loginUrl = loginUrl.replace(re,'/');
+        loginUrl = document.location.protocol+"//"+loginUrl;
+        console.log(loginUrl)
+        return loginUrl;
       }
 
       function save() {
@@ -308,6 +321,9 @@
             $("#node-config-input-jwtSecret").val(generateJwtSecret());
             save();
           }
+
+          var loginUrl = getLoginUrl(globalUserConfigNode);
+          $(".users-login-link").attr("href", loginUrl).text(loginUrl);
         }
       }
 
