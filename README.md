@@ -37,7 +37,7 @@ If the JWT successfully passes verification, the node will add the JWT payload (
 
 Clicking "show advanced settings" inside the users config tab will display custom options for the default URL and JWT. These should be left alone unless you know what you're doing.
 
-**Base URL path** - the base path used for the default login and logout endpoints. Default: `/users`.
+**Base URL path** - the base path used for the default login and logout endpoints. Default: `/users`. This is NOT your http node URL.
 
 **JWT cookie name** - name of the browser cookie used to store the json web token.
 
