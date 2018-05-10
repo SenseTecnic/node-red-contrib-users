@@ -64,8 +64,11 @@ module.exports = function (RED) {
         if (node.enableCustomHandler) {
           node.send([null, msg]);
         } else {
-          var currentUrl = msg.req.protocol+'://'+msg.req.get('host')+msg.req.originalUrl;
-          var redirectUrl = path.join(RED.settings.httpNodeRoot, config.appPath+"/")+"?return="+currentUrl;
+          var protocol = config.jwtHttpsOnly ? "https": msg.req.protocol;
+          var currentUrl = protocol+'://'+msg.req.get('host')+msg.req.originalUrl;
+          var redirectUrl = path.join(RED.settings.httpNodeRoot, config.appPath)+"/";
+          var re = new RegExp('\/{1,}','g'); // sanitize url for double slashes
+          redirectUrl = redirectUrl.replace(re,'/')+"?return="+currentUrl;
           msg.res.redirect(redirectUrl); // TODO: fix deprecation warning
         }
       }

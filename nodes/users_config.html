@@ -92,7 +92,7 @@
 }
 .advanced-form-toggle {
   display: block;
-  margin: 10px 0 15px 0;
+  margin: 10px 0 20px 0;
 }
 .advanced-form-wrapper {
   max-height: 0;
@@ -106,6 +106,11 @@
   -moz-transition: max-height .2s 0s ease-in-out;
   -webkit-transition: max-height .2s 0s ease-in-out;
   transition: max-height .2s 0s ease-in-out;
+}
+.users-login-link {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  display: block;
 }
 </style>
 
@@ -176,7 +181,7 @@
 
       var appPathForm = $("<div>", {class: "form-row"}).appendTo(advancedFormWrapper);
       var appPathLabel = $("<label>", {for: "node-config-input-appPath"}).text("Base URL path").appendTo(appPathForm);
-      var appPathInput = $("<input>", {type: "text", id: "node-config-input-appPath", "placeholder": "Base URL path"}).appendTo(appPathForm);
+      var appPathInput = $("<input>", {type: "text", id: "node-config-input-appPath", "placeholder": "Base URL path (not your http node URL)"}).appendTo(appPathForm);
 
       var jwtCookieForm = $("<div>", {class: "form-row"}).appendTo(advancedFormWrapper);
       var jwtCookieLabel = $("<label>", {for: "node-config-input-jwtCookieName"}).text("JWT cookie name").appendTo(jwtCookieForm);
@@ -191,6 +196,9 @@
       var httpsForm = $("<div>", {class: "form-row"}).appendTo(advancedFormWrapper);
       var httpsCheckbox = $("<input>", {type: "checkbox", id:"node-config-input-httpsOnly"}).appendTo(httpsForm);
       var httpsLabel = $("<label>", {for: "node-config-input-httpsOnly"}).text("JWT HTTPS only").attr("title", "Only send JWT cookie over secure https connection").appendTo(httpsForm);
+
+      var docsContainer = $("<div>", {class: "form-row alert alert-info"}).text("Have questions? Check out the ").appendTo(content);
+      var docLink = $("<a>", {href: "https://github.com/SenseTecnic/node-red-contrib-users#node-red-contrib-users", target: "_blank"}).text("usage documentation and FAQ").appendTo(docsContainer);
 
       function getNodeUsers() {
         var nodeUsers = [];

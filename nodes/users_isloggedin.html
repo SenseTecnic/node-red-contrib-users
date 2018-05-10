@@ -18,6 +18,7 @@
   <h1>is logged in</h1>
   <p>This node that acts like a middleware that check and verifies the json web token (JWT) in the incoming request (msg.req). It expects req and res objects in the msg input, usually from a "http in" node.</p>
   <p>If the JWT successfully passes verification, the node will add the JWT payload (username and scope) to the msg.payload.user and msg.req.user objects and pass the msg through to output #1. If verification fails (user unauthenticated), by default the node will redirect the request to the default login page at "/users". If the "custom error ouput handler" setting is enabled, the node will send the message to output #2 to be handled by a custom template node and http out node.</p>
+  <p><a href="https://github.com/SenseTecnic/node-red-contrib-users#node-red-contrib-users" target="_blank">More details Here</a></p>
   <h3>Input</h3>
   <dl class="message-properties">
     <dt>
