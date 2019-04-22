@@ -1,4 +1,4 @@
-<script type="text/x-red" data-template-name="users_isloggedin">
+<script type="text/x-red" data-template-name="users_manager">
 
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
@@ -14,7 +14,7 @@
   <input type="hidden" id="node-input-outputs">
 </script>
 
-<script type="text/x-red" data-help-name="users_isloggedin">
+<script type="text/x-red" data-help-name="users_manager">
   <h1>Credential Manager</h1>
   <p>This node is used to manage the node-red-contrib-users credentials</p>
   <p>This node is currently in developement and does not work</p>
@@ -29,8 +29,8 @@
     <dd>The node takes an anonymous javascript object from msg.user_manager with the following properties: action, username, and password.</dd>
     <dd>The action field can have the following values: create, update, create_or_update, and delete.</dd>
     <dd>The username field takes a string and identifies the account to modify.</dd>
-    <dd>The password field takes a string and sets/updates the value (this field has no effect on an action of delete)<dd>
-    <dd>For most use cases, an action value of 'create_or_update' will probably work best<dd>
+    <dd>The password field takes a string and sets/updates the value paren this field has no effect on an action of delete paren</dd>
+    <dd>For most use cases, an action value of 'create_or_update' will probably work best</dd>
   </dl>
   <h3>Output</h3>
   <dl class="message-properties">
@@ -39,7 +39,7 @@
       <span class="property-type">object</span>
     </dt>
     <dd>The node outputs an anonymous javascript object from msg.user_manager, adding the 'error' property to the object.</dd>
-    <dd>The 'error' property has the following values: success (boolean) and message (string).</dd>
+    <dd>The 'error' property has the following values: success paren boolean paren and message paren string paren.</dd>
   </dl>
 </script>
 
@@ -57,6 +57,9 @@
     inputs: 1,
     outputs: 1
     },
+    oneditsave: function() {
+      $("node-input-outputs").val(1);
+    }
     oneditprepare: function () {
       var bases = [];
       RED.nodes.eachConfig(function(n) {
@@ -75,7 +78,7 @@
       $(".users-login-link").attr("href", loginUrl).text(loginUrl);
     },
     label: function () {
-      return this.name || "is logged in";
+      return this.name || "Credential Manager";
     }
   });
 </script>

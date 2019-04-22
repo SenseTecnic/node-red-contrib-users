@@ -1,37 +1,63 @@
 {
-  "name": "node-red-contrib-users",
-  "version": "0.1.7",
-  "description": "A node used to quickly build a simple user system to control access to your http nodes on Node-RED.",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "_from": "node-red-contrib-users",
+  "_id": "node-red-contrib-users@0.1.8",
+  "_inBundle": false,
+  "_integrity": "sha512-u/kRkO7X3YsPcPBefyJenJ6cAD5gJhr00IXo9Gnzcbc7DooRYpXcESQQZ4gNF3PLxHXzdmP+2rOALLxIl9JDog==",
+  "_location": "/node-red-contrib-users",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "node-red-contrib-users",
+    "name": "node-red-contrib-users",
+    "escapedName": "node-red-contrib-users",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/SenseTecnic/node-red-contrib-users.git"
-  },
-  "keywords": [
-    "node-red",
-    "user management"
+  "_requiredBy": [
+    "#USER"
   ],
-  "node-red": {
-    "nodes": {
-      "users_config": "nodes/users_config.js",
-      "users_isloggedin": "nodes/users_isloggedin.js"
-    }
+  "_resolved": "https://registry.npmjs.org/node-red-contrib-users/-/node-red-contrib-users-0.1.7.tgz",
+  "_shasum": "1c9a2188565ae89b0d6f4074dda69401f50532ee",
+  "_spec": "node-red-contrib-users",
+  "_where": "/home/aaron",
+  "bugs": {
+    "url": "https://github.com/SenseTecnic/node-red-contrib-users/issues"
   },
+  "bundleDependencies": false,
   "contributors": [
     {
       "name": "Ted Huang"
     }
   ],
-  "license": "",
-  "bugs": {
-    "url": "https://github.com/SenseTecnic/node-red-contrib-users/issues"
-  },
-  "homepage": "https://github.com/SenseTecnic/node-red-contrib-users#readme",
   "dependencies": {
     "bcrypt": "^2.0.0",
     "cookie": "^0.3.1",
     "jsonwebtoken": "^8.2.1"
-  }
+  },
+  "deprecated": false,
+  "description": "A node used to quickly build a simple user system to control access to your http nodes on Node-RED.",
+  "homepage": "https://github.com/SenseTecnic/node-red-contrib-users#readme",
+  "keywords": [
+    "node-red",
+    "user management"
+  ],
+  "license": "",
+  "name": "node-red-contrib-users",
+  "node-red": {
+    "nodes": {
+      "users_config": "nodes/users_config.js",
+      "users_manager": "nodes/users_manager.js",
+      "users_isloggedin": "nodes/users_isloggedin.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Doom4535/node-red-contrib-users.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.1.88"
 }

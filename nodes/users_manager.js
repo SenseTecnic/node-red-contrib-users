@@ -22,7 +22,7 @@ function checkedRequiredFields(RED, node, config, msg) {
 
 module.exports = function (RED) {
 
-  function UsersManager(n) {
+  function UsersManagerNode(n) {
     RED.nodes.createNode(this,n);
     var node = this;
     node.status({});
@@ -75,5 +75,5 @@ module.exports = function (RED) {
     });
   }
 
-  RED.nodes.registerType("users_manager", UsersManager);
+  RED.nodes.registerType("users_manager", UsersIsLoggedInNode);
 };
