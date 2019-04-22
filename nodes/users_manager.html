@@ -1,0 +1,81 @@
+<script type="text/x-red" data-template-name="users_isloggedin">
+
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+    <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+  </div>
+
+  <div class="form-row" style="padding-left: 100px;">
+    <input type="checkbox" id="node-input-enableCustomHandler" style="display: inline-block; width: 20px; vertical-align: top;">
+    <label for="node-input-enableCustomHandler" style="width: auto; font-weight: normal; display: inline-block;">Enable custom error output handler</label>
+    <div class="alert alert-info" style="max-width: 300px; margin-top: 15px;">By default, the node will redirect users to the default login page at <strong><a class="users-login-link" target="_blank"></a></strong>. <br/><br/>By enabling the custom error handler, all requests that are not authenticated (403) will be routed to output 2 of this node.</div>
+  </div>
+
+  <input type="hidden" id="node-input-outputs">
+</script>
+
+<script type="text/x-red" data-help-name="users_isloggedin">
+  <h1>Credential Manager</h1>
+  <p>This node is used to manage the node-red-contrib-users credentials</p>
+  <p>This node is currently in developement and does not work</p>
+  <p><a href="https://github.com/SenseTecnic/node-red-contrib-users#node-red-contrib-users" target="_blank">Original Project Link</a></p>
+  <p><a href="https://github.com/Doom4535/node-red-contrib-users#node-red-contrib-users" target"_blank">Current developement Branch</a></p>
+  <h3>Input</h3>
+  <dl class="message-properties">
+    <dt>
+      Message inputs
+      <span class="property-type">object</span>
+    </dt>
+    <dd>The node takes an anonymous javascript object from msg.user_manager with the following properties: action, username, and password.</dd>
+    <dd>The action field can have the following values: create, update, create_or_update, and delete.</dd>
+    <dd>The username field takes a string and identifies the account to modify.</dd>
+    <dd>The password field takes a string and sets/updates the value (this field has no effect on an action of delete)<dd>
+    <dd>For most use cases, an action value of 'create_or_update' will probably work best<dd>
+  </dl>
+  <h3>Output</h3>
+  <dl class="message-properties">
+    <dt>
+      Message outputs
+      <span class="property-type">object</span>
+    </dt>
+    <dd>The node outputs an anonymous javascript object from msg.user_manager, adding the 'error' property to the object.</dd>
+    <dd>The 'error' property has the following values: success (boolean) and message (string).</dd>
+  </dl>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('users_manager', {
+    category: 'function',
+    defaults: {
+      name: {value: ""},
+      enableCustomHandler: {value: false},
+      outputs: {value: 1}
+    },
+    paletteLabel: "Credential Manager",
+    icon: "users.png",
+    color: "#00abb0",
+    inputs: 1,
+    outputs: 1
+    },
+    oneditprepare: function () {
+      var bases = [];
+      RED.nodes.eachConfig(function(n) {
+        if (n.type === 'users_config') {
+          bases.push(n);
+        }
+      });
+      var config = bases[0];
+      var appPath = config ? config.appPath: "/users";
+      var nodeRoot = RED.settings.httpNodeRoot;
+      var loginUrl = document.location.host+nodeRoot+appPath;
+      var re = new RegExp('\/{1,}','g');
+      loginUrl = loginUrl.replace(re,'/');
+      loginUrl = document.location.protocol+"//"+loginUrl;
+
+      $(".users-login-link").attr("href", loginUrl).text(loginUrl);
+    },
+    label: function () {
+      return this.name || "is logged in";
+    }
+  });
+</script>
