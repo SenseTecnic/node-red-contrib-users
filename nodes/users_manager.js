@@ -75,5 +75,5 @@ module.exports = function (RED) {
     });
   }
 
-  RED.nodes.registerType("users_manager", UsersIsLoggedInNode);
+  RED.nodes.registerType("users_manager", UsersManagerNode);
 };
