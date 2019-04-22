@@ -308,7 +308,7 @@
             // users config found
             globalUserConfigNode = bases[0];
 
-            $.getJSON('/credentials/users_config/'+globalUserConfigNode.id, function (data) {
+            $.getJSON('credentials/users_config/'+globalUserConfigNode.id, function (data) {
               globalUserConfigNode.credentials = {};
               globalUserConfigNode.credentials.nodeUsers = data.nodeUsers || [];
               globalUserConfigNode.credentials.jwtSecret = data.jwtSecret;
