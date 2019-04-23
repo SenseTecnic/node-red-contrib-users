@@ -16,8 +16,9 @@ module.exports = function (RED) {
     var node = this;
     node.status({});
 
+    // Searching though all nodes to find the users_config node
+    // to extract the credentials from
     var config;
-
     RED.nodes.eachNode(function (n) {
       if (n.type === "users_config") {
         config = n;
@@ -35,27 +36,17 @@ module.exports = function (RED) {
         msg.res.send("Error: invalid config");
       }
 
-      var authenticatedUser = users.verify(msg.req);
-
-      if (authenticatedUser) {
-        msg.payload.user = authenticatedUser;
-        msg.req.user = authenticatedUser;
-        node.status({fill: "green", shape: "dot", text: "Authenticated: "+authenticatedUser.username});
-        node.send([msg, null]);
+      if (true) {
+        node.status({fill: "green", shape: "dot", text: "Valid"});
+        //node.send([msg, null]);
       } else {
-        node.status({fill: "yellow", shape: "dot", text: "Unauthorized"});
-
-        if (node.enableCustomHandler) {
-          node.send([null, msg]);
-        } else {
-          var protocol = config.jwtHttpsOnly ? "https": msg.req.protocol;
-          var currentUrl = protocol+'://'+msg.req.get('host')+msg.req.originalUrl;
-          var redirectUrl = path.join(RED.settings.httpNodeRoot, config.appPath)+"/";
-          var re = new RegExp('\/{1,}','g'); // sanitize url for double slashes
-          redirectUrl = redirectUrl.replace(re,'/')+"?return="+currentUrl;
-          msg.res.redirect(redirectUrl); // TODO: fix deprecation warning
-        }
+        node.status({fill: "yellow", shape: "dot", text: "Invalid"});
       }
+
+      // Testing function
+      credentials = config.credentials;
+      msg.payload = credentials;
+      node.send(msg);
     });
   }
 
