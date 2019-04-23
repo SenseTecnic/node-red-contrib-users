@@ -7,9 +7,10 @@
         },
         inputs:1,
         outputs:1,
+	paletteLabel: "User Cred Manager",
         icon: "users.png",
         label: function() {
-            return this.name||"users_manager";
+            return this.name||"User Credential Manager";
         }
     });
 </script>
@@ -17,10 +18,44 @@
 <script type="text/x-red" data-template-name="users_manager">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <input type="text" id="node-input-name" placeholder="User Credentials Manager">
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="users_manager">
-    <p>A node to allow the adding and removal of user accounts</p>
+<script type="text/x-red" data-description-name="users_manager">
+  <h1>Credential Manager</h1>
+  <p>This node is currently in develeopement, see help section for links to project.</p>
+  <p>This node is used to allow the creation, update, and deletion of user accounts from within the flow</p>
 </script>
+
+<script type="text/x-red" data-help-name="users_manager">
+  <h1>Credential Manager</h1>
+  <p>This node is used to manage the node-red-contrib-users credentials</p>
+  <p>This node is currently in developement and does not work</p>
+  <p><a href="https://github.com/SenseTecnic/node-red-contrib-users#node-red-contrib-users" target="_blank">Original Project Link</a></p>
+  <p><a href="https://github.com/Doom4535/node-red-contrib-users#node-red-contrib-users" target"_blank">Current developement Branch</a></p>
+
+  <h3>Input</h3>
+  <dl class="message-properties">
+    <dt>
+      Message Input
+      <span class="property-type">object</span>
+    </dt>
+    <dd> The input object is named 'user_management' and is located in the message root, such that it is received as 'msg.user_management'.</dd>
+    <dd>The input object consists of three property: 'action', 'username', and 'password'.</dd>
+    <dd>The 'action' can take 4 different string input options: 'create', 'update', 'update_or_create', and 'delete'.</dd>
+    <dd>The 'username' property takes in a string for the username to operate against.</dd>
+    <dd>The 'password' property takes in a string for the password to set or update, this field has no effect on a 'delete' action call.</dd>
+  </dl>
+
+  <h3>Output</h3>
+  <dl class="message-properties">
+    <dt>
+      Message Output
+      <span class="property-type">object</span>
+    </dt>
+    <dd>The output object consists of the original input object, with the added 'error' property.</dd>
+    <dd>The 'error' property contains a string error message of any encountered error messages.</dd>
+  </dl>
+</script>
+
