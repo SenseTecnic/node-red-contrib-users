@@ -1,12 +1,10 @@
 {
   "users": {
     "errors": {
-      "missing-users-config": "Node users config is not set",
-      "http-node-required": "Message does not contain req and res objects. Please use http in node as input.",
-      "http-node-required-status": "Missing req and res in msg",
-      "missing-users-list": "Allowed users list is not set",
-      "missing-jwt-cookie-name": "JWT cookie name is not set",
-      "missing-jwt-secret": "JWT secret is not set"
+      "user-management-required": "msg.user_management is a required property",
+      "user-management-action-required": "msg.user_management.action is a required property",
+      "user-management-username-required": "msg.user_management.username is a required property",
+      "user-management-password-required": "msg.user_management.password is a required property"
     }
   }
 }
