@@ -52,12 +52,58 @@ function hash(username, password) {
 }
 
 function getUser(username, password) {
+  var user = getUserAccount(username);
+  // Check if the credentials provided match, if they don't return null
+  return user.password == hash(username, password) ? user : null
+}
+
+// Check if there is an account that matches the provided username
+function getUserAccount(username) {
   var user = usersConfig.credentials.nodeUsers.filter(function (u) {
-    return u.username === username && u.password === hash(username, password);
+    return u.username == username
   })[0];
   return user;
 }
 
+function getUserExistance(username){
+  user = usersConfig.credentials.nodeUsers.filter(function (u) {
+    return u.username === username;
+  });
+  existance = (user != null) ? true : false;
+  return existance
+}
+
+function addUser(usern, pass){
+  newUser = {
+	      username: usern,
+	      password: hash(usern, pass)
+  };
+  userConfig.credentials.nodeUsers.push(newUser);
+}
+/*
+function updateUser(original_username, new_username, new_password){
+  var user = getUserAccount(original_username);
+  if (user != null){
+    user.username = new_username;
+    user.password = new_password;
+    deleteUser(original_username);
+    userConfig.credentials.nodeUsers.push(user);
+    return getUser(new_username);
+  }
+  return user;
+}
+
+
+function deleteUser(username){
+  // We shouldn't ever let there be more than one occurance of a user, but we don't do
+  // anything to ensure it.  Lets loop through to ensure that there are non leftover
+  while(getUserExistance(username){
+    usersConfig.credentials.nodeUsers.splice(usersConfig.credentials.indexOf(function (u) {
+      return u.username == username
+    }),1);
+  }
+}
+*/
 function handleLogin(req, res) {
   if (!usersConfig  || !usersConfig.credentials || !usersConfig.credentials.jwtSecret) {
     log.error("Node users: missing or incomplete users config");
@@ -159,5 +205,12 @@ module.exports = {
 
     init(RED.server, RED.httpNode, RED.log, RED.settings);
   },
+  hash: hash,
+  getUserExistance: getUserExistance,
+  getUserAccount: getUserAccount,
+  getUser: getUser,
+  addUser: addUser,
+  //updateUser, updateUser,
+  //deleteUser: deleteUser,
   verify: verifyJwt
 };
