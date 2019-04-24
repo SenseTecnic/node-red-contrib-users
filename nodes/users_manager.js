@@ -49,33 +49,47 @@ module.exports = function (RED) {
 
       user_m = msg.user_management;
       switch(user_m.action) {
+	case 'test':
+	  user_m.result = users.getUser('operator','operator');
+	  break;
+	/*
         case 'create':
-	  if(users.getUser('operator','operator') == null){
+	  if(users.getUserExistance(user_m.username) == null){
 	    // Create the new user
             user_m.result = "Creation request";
+	    users.addUser(user_m.username, user_m.password);
 	  }
 	  else{
 	    // We have encountered an error
-            user_m.error = "Creation request error";
+            user_m.error = "Creation request error, user already exists";
 	  }
 	  break;
 	case 'update':
-	  if(users.getUser('operator','operator') != null){
+	  if(users.getUserExistance(user_m.username) != null){
 	    // Update the user
             user_m.result = "Update request"
+	    
 	  }
 	  else{
 	    // We have encountered an error
-            user_m.error = "Update request error";
+            user_m.error = "Update request error, user does not exist";
 	  }
 	  break;
 	case 'update_or_create':
           // Create the user (we can be indiscriminate b/c
           // we want to overwrite the old record if it exists
-          user_m.result = "Update or Create request";
+          if(users.getUserExistance(user_m.username) == null){
+	    // User doesn't exist, create
+	    users.addUser(user_m.username, user_m.password);
+	  }
+	  else {
+	    // User exists, we will delete them and then recreate
+	    users.deleteUser(user_m.username);
+	    user.createUser(user_m.username, user_m.password);
+	  }
 	  break;
 	case 'delete': 
-	  if(users.getUser('operator','operator') != null){
+	  if(users.getUser(user_m.username,user_m.password) != null){
 	    // Delete the user
             user_m.result = "Delete request";
 	  }
@@ -84,6 +98,7 @@ module.exports = function (RED) {
             user_m.error = "Delete request error";
 	  }
 	  break;
+	*/
 	default:
 	  // Default action
           user_m.error = "Default action triggered";
