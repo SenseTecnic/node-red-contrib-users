@@ -59,33 +59,30 @@ function getUser(username, password) {
 
 // Check if there is an account that matches the provided username
 function getUserAccount(username) {
-  var user = usersConfig.credentials.nodeUsers.filter(function (u) {
+  var user = usersConfig.credentials.nodeUsers.find(function (u) {
     return u.username == username
-  })[0];
+  });
   return user;
 }
 
 function getUserExistance(username){
-  user = usersConfig.credentials.nodeUsers.filter(function (u) {
-    return u.username === username;
-  });
-  existance = (user != null) ? true : false;
+  existance = (getUserAccount(username) != null)  ? true : false;
   return existance
 }
 
-function addUser(usern, pass){
-  newUser = {
-	      username: usern,
-	      password: hash(usern, pass)
-  };
-  userConfig.credentials.nodeUsers.push(newUser);
+function addUser(username, password){
+  usersConfig.credentials.nodeUsers.push({
+    username: username,
+    password: hash(username, password),
+    scope: ''
+  });
 }
-/*
+
 function updateUser(original_username, new_username, new_password){
   var user = getUserAccount(original_username);
   if (user != null){
     user.username = new_username;
-    user.password = new_password;
+    user.password = hash(original_username, new_password);
     deleteUser(original_username);
     userConfig.credentials.nodeUsers.push(user);
     return getUser(new_username);
@@ -93,17 +90,16 @@ function updateUser(original_username, new_username, new_password){
   return user;
 }
 
-
 function deleteUser(username){
   // We shouldn't ever let there be more than one occurance of a user, but we don't do
   // anything to ensure it.  Lets loop through to ensure that there are non leftover
-  while(getUserExistance(username){
-    usersConfig.credentials.nodeUsers.splice(usersConfig.credentials.indexOf(function (u) {
-      return u.username == username
+  while(getUserExistance(username)){
+    usersConfig.credentials.nodeUsers.splice(usersConfig.credentials.nodeUsers.findIndex(function (u) {
+      return(u.username == username);
     }),1);
   }
 }
-*/
+
 function handleLogin(req, res) {
   if (!usersConfig  || !usersConfig.credentials || !usersConfig.credentials.jwtSecret) {
     log.error("Node users: missing or incomplete users config");
@@ -210,7 +206,7 @@ module.exports = {
   getUserAccount: getUserAccount,
   getUser: getUser,
   addUser: addUser,
-  //updateUser, updateUser,
-  //deleteUser: deleteUser,
+  updateUser, updateUser,
+  deleteUser: deleteUser,
   verify: verifyJwt
 };

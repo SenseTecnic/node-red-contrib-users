@@ -46,29 +46,43 @@ module.exports = function (RED) {
         msg.res.status(500);
         msg.res.send("Error: invalid config");
       }
-
       user_m = msg.user_management;
       switch(user_m.action) {
 	case 'test':
 	  user_m.result = users.getUser('operator','operator');
 	  break;
-	/*
-        case 'create':
-	  if(users.getUserExistance(user_m.username) == null){
-	    // Create the new user
-            user_m.result = "Creation request";
-	    users.addUser(user_m.username, user_m.password);
+	case 'find':
+	  var result = users.getUserAccount(user_m.username);
+	  if(result == null){
+	    user_m.result = "Null User";
 	  }
-	  else{
-	    // We have encountered an error
-            user_m.error = "Creation request error, user already exists";
+	  else {
+	    user_m.result = users.getUserAccount(user_m.username);
+	  }
+	  break;
+        case 'create':
+	  if(users.getUserExistance(user_m.username)){
+	    // We have encountered an issue
+	    user_m.error = "Creation request error, user alredy exists";
+	  }
+	  else {
+	    user_m.result = "Creation request";
+	    users.addUser(user_m.username, user_m.password);
+	    var success = users.getUserExistance(user_m.username);
+	    if (success) {
+	      user_m.result = "Created the new user with username of $(user_m.username)";
+	    }
+	    else {
+	      user_m.error = "Failed to create the new user";
+	    }
 	  }
 	  break;
 	case 'update':
 	  if(users.getUserExistance(user_m.username) != null){
 	    // Update the user
             user_m.result = "Update request"
-	    
+	    // This does not verify write permissions
+	    users.updateUser(user_m.username, user_m.username, user_m.password); 
 	  }
 	  else{
 	    // We have encountered an error
@@ -84,21 +98,22 @@ module.exports = function (RED) {
 	  }
 	  else {
 	    // User exists, we will delete them and then recreate
-	    users.deleteUser(user_m.username);
-	    user.createUser(user_m.username, user_m.password);
+	    // This does not verify the password (does not check if user has permission to change)
+	    users.updateUser(user_m.username, user_m.username, user_m.password);
 	  }
 	  break;
 	case 'delete': 
-	  if(users.getUser(user_m.username,user_m.password) != null){
+	  if(users.getUser(user_m.username, user_m.password) != null){
 	    // Delete the user
             user_m.result = "Delete request";
+	    // This does not verify the password (does not check if user has permission to change)
+	    users.deleteUser(user_m.username);
 	  }
 	  else{
 	    // We have encountered an error
             user_m.error = "Delete request error";
 	  }
 	  break;
-	*/
 	default:
 	  // Default action
           user_m.error = "Default action triggered";
