@@ -70,7 +70,7 @@ module.exports = function (RED) {
 	    users.addUser(user_m.username, user_m.password);
 	    var success = users.getUserExistance(user_m.username);
 	    if (success) {
-	      user_m.result = "Created the new user with username of $(user_m.username)";
+	      user_m.result = "Created the new user";
 	    }
 	    else {
 	      user_m.error = "Failed to create the new user";
@@ -79,10 +79,10 @@ module.exports = function (RED) {
 	  break;
 	case 'update':
 	  if(users.getUserExistance(user_m.username) != null){
-	    // Update the user
-            user_m.result = "Update request"
 	    // This does not verify write permissions
 	    users.updateUser(user_m.username, user_m.username, user_m.password); 
+	    // Update the user
+            user_m.result = "Updated user";
 	  }
 	  else{
 	    // We have encountered an error
@@ -95,19 +95,21 @@ module.exports = function (RED) {
           if(users.getUserExistance(user_m.username) == null){
 	    // User doesn't exist, create
 	    users.addUser(user_m.username, user_m.password);
+	    user_m.result = "Created user";
 	  }
 	  else {
 	    // User exists, we will delete them and then recreate
 	    // This does not verify the password (does not check if user has permission to change)
 	    users.updateUser(user_m.username, user_m.username, user_m.password);
+	    user_m.result = "Updated user";
 	  }
 	  break;
 	case 'delete': 
 	  if(users.getUser(user_m.username, user_m.password) != null){
-	    // Delete the user
-            user_m.result = "Delete request";
 	    // This does not verify the password (does not check if user has permission to change)
 	    users.deleteUser(user_m.username);
+	    // Delete the user
+            user_m.result = "Deleted user";
 	  }
 	  else{
 	    // We have encountered an error
