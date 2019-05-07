@@ -1,0 +1,10 @@
+{
+  "users": {
+    "errors": {
+      "user-management-required": "msg.user_management is a required property",
+      "user-management-action-required": "msg.user_management.action is a required property",
+      "user-management-username-required": "msg.user_management.username is a required property",
+      "user-management-password-required": "msg.user_management.password is a required property"
+    }
+  }
+}

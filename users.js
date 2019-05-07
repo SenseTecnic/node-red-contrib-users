@@ -52,10 +52,52 @@ function hash(username, password) {
 }
 
 function getUser(username, password) {
-  var user = usersConfig.credentials.nodeUsers.filter(function (u) {
-    return u.username === username && u.password === hash(username, password);
-  })[0];
+  var user = getUserAccount(username);
+  // Check if the credentials provided match, if they don't return null
+  return user.password == hash(username, password) ? user : null
+}
+
+// Check if there is an account that matches the provided username
+function getUserAccount(username) {
+  var user = usersConfig.credentials.nodeUsers.find(function (u) {
+    return u.username == username
+  });
   return user;
+}
+
+function getUserExistance(username){
+  existance = (getUserAccount(username) != null)  ? true : false;
+  return existance
+}
+
+function addUser(username, password){
+  usersConfig.credentials.nodeUsers.push({
+    username: username,
+    password: hash(username, password),
+    scope: ''
+  });
+}
+
+function updateUser(original_username, new_username, new_password){
+  var user = getUserAccount(original_username);
+  if (user != null){
+    user.username = new_username;
+    user.password = hash(original_username, new_password);
+    deleteUser(original_username);
+    userConfig.credentials.nodeUsers.push(user);
+    return getUser(new_username);
+  }
+  return user;
+}
+
+function deleteUser(username){
+  // We shouldn't ever let there be more than one occurance of a user, but we don't do
+  // anything to ensure it.  Lets loop through to ensure that there are non leftover
+  while(getUserExistance(username)){
+    usersConfig.credentials.nodeUsers.splice(usersConfig.credentials.nodeUsers.findIndex(function (u) {
+      return(u.username == username);
+    }),1);
+  }
 }
 
 function handleLogin(req, res) {
@@ -159,5 +201,12 @@ module.exports = {
 
     init(RED.server, RED.httpNode, RED.log, RED.settings);
   },
+  hash: hash,
+  getUserExistance: getUserExistance,
+  getUserAccount: getUserAccount,
+  getUser: getUser,
+  addUser: addUser,
+  updateUser, updateUser,
+  deleteUser: deleteUser,
   verify: verifyJwt
 };
