@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/SenseTecnic/node-red-contrib-users#readme",
   "dependencies": {
-    "bcrypt": "^2.0.0",
+    "bcrypt": "^3.0.6",
     "cookie": "^0.3.1",
     "jsonwebtoken": "^8.2.1"
   }
