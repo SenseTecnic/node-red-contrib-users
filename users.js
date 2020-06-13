@@ -2,6 +2,7 @@ var path = require('path');
 var jwt = require('jsonwebtoken');
 var cookie = require('cookie');
 var crypto = require('crypto');
+var bodyParser = require('body-parser');
 
 var APP_DIR = path.join(__dirname, './app');
 var JWT_COOKIE_EXPIRY =  604800000; // 7 days
@@ -111,6 +112,9 @@ function init(server, app, _log, redSettings) {
     log.error("Node users config not initialized");
     return;
   }
+
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: true }));
 
   app.get(path.join(usersConfig.appPath, 'static/app.css'), function (req, res) {
     res.sendFile(path.join(APP_DIR, 'static', 'app.css'));

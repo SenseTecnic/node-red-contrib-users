@@ -153,7 +153,7 @@
       var globalUserConfigNode = null;
 
       var content = $("<div>", {class: "node-users-config-wrapper"});
-      
+
       var helpInfo  = $("<div>", {class: "form-row alert alert-info"}).html("Create a list of users who are authorized. The default login page can be accessed at:<br>").appendTo(content);
       var loginLink = $("<a>", {class: "users-login-link"}).attr("target", "_blank").appendTo(helpInfo);
 
@@ -163,11 +163,11 @@
       var usernameForm = $("<div>", {class: "form-row user-row"}).appendTo(content);
       var usernameLabel = $("<label>", {for: "node-config-input-users-username"}).text("Username").appendTo(usernameForm);
       var usernameInput = $("<input>", {type: "text", id: "node-config-input-users-username", "placeholder": "Username (required)"}).appendTo(usernameForm);
-      
+
       var passwordForm = $("<div>", {class: "form-row user-row"}).appendTo(content);
       var passwordLabel = $("<label>", {for: "node-config-input-users-password"}).text("Password").appendTo(passwordForm);
       var passwordInput = $("<input>", {type: "text", id: "node-config-input-users-password", "placeholder": "Password (required)"}).appendTo(passwordForm);
-      
+
       var scopeForm = $("<div>", {class: "form-row user-row"}).appendTo(content);
       var scopeLabel = $("<label>", {for: "node-config-input-users-scope"}).text("Scope").appendTo(scopeForm);
       var scopeInput = $("<input>", {type: "text", id: "node-config-input-users-scope", "placeholder": "Scope (optional)"}).appendTo(scopeForm);
@@ -308,7 +308,7 @@
             // users config found
             globalUserConfigNode = bases[0];
 
-            $.getJSON('/credentials/users_config/'+globalUserConfigNode.id, function (data) {
+            $.getJSON('credentials/users_config/'+globalUserConfigNode.id, function (data) {
               globalUserConfigNode.credentials = {};
               globalUserConfigNode.credentials.nodeUsers = data.nodeUsers || [];
               globalUserConfigNode.credentials.jwtSecret = data.jwtSecret;
@@ -402,13 +402,13 @@
           password: $("#node-config-input-users-password").val(),
           scope: $("#node-config-input-users-scope").val()
         };
-        if (user.username === "" || user.password === "") { 
+        if (user.username === "" || user.password === "") {
           RED.notify("Username and password fields are required.", "error");
           return;
         }
         if (user.password.length < 6) {
           RED.notify("Password must be more than 6 characters", "error");
-          return; 
+          return;
         }
         if (userExists(user.username) === true) {
           RED.notify("User with username \""+user.username+"\" already exist in the list.", "error");
@@ -427,21 +427,21 @@
         if ($(this).val() === "") {
           $("#node-config-input-jwtSecret").val(generateJwtSecret());
         }
-        save(); 
+        save();
       });
 
       $(document).on("blur", "#node-config-input-jwtCookieName", function () {
         if ($(this).val() === "") {
           $("#node-config-input-jwtCookieName").val(DEFAULT_JWT_COOKIE_NAME);
         }
-        save(); 
+        save();
       });
 
       $(document).on("blur", "#node-config-input-appPath", function () {
         if ($(this).val() === "") {
           $("#node-config-input-appPath").val(DEFAULT_APP_PATH);
         }
-        save(); 
+        save();
       });
 
       $(document).on("click", "#generate-jwt-secret", function () {
@@ -460,7 +460,7 @@
         content: content,
         closeable: true,
         disableOnEdit: true,
-        onchange: function() { 
+        onchange: function() {
           initUsersConfigNode();
         }
       });
