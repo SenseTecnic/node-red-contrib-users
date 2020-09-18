@@ -24,7 +24,7 @@
       "name": "Ted Huang"
     }
   ],
-  "license": "",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/SenseTecnic/node-red-contrib-users/issues"
   },
