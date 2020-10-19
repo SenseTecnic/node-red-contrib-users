@@ -38,7 +38,8 @@ function createJwtToken(req, res, jwtSecret, jwtCookieName, payload) {
   var token = jwt.sign(payload, jwtSecret);
   res.cookie(jwtCookieName, token, {
     maxAge: JWT_COOKIE_EXPIRY,
-    secure: usersConfig.jwtHttpsOnly === true
+    secure: usersConfig.jwtHttpsOnly === true,
+    path:   req.baseUrl || '/'
   });
 }
 
