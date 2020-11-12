@@ -1,5 +1,8 @@
 var users = require('../users');
 
+var DEFAULT_JWT_COOKIE_MAX_AGE = 604800000; // 7 days
+var DEFAULT_APP_PATH = '/users';
+
 module.exports = function (RED) {
 
   function UsersConfig(n) {
@@ -27,10 +30,16 @@ module.exports = function (RED) {
       return;
     }
 
+    // if (!n.jwtCookieMaxAge) {
+    //   node.error(RED._("users.errors.missing-jwt-cookie-max-age"));
+    //   return;
+    // }
+
     node.credentials = credentials;
     node.jwtCookieName = n.jwtCookieName;
+    node.jwtCookieMaxAge = n.jwtCookieMaxAge || DEFAULT_JWT_COOKIE_MAX_AGE;
     node.jwtHttpsOnly = n.jwtHttpsOnly === true;
-    node.appPath = n.appPath || '/users';
+    node.appPath = n.appPath || DEFAULT_APP_PATH;
     users.init(RED, node);
   }
 
