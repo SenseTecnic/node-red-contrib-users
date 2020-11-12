@@ -146,7 +146,7 @@
       ////////////////////////////////
       var SHA512 = new Hashes.SHA512
       var DEFAULT_JWT_COOKIE_NAME = "nr.nodeUsers.jwt";
-      var DEFAULT_JWT_COOKIE_MAX_AGE = 604800000; // 7 days
+      var DEFAULT_JWT_COOKIE_MAX_AGE = '1w';
       var DEFAULT_APP_PATH = '/users';
 
       var globalUserConfigNode = null;
@@ -186,8 +186,8 @@
       var jwtCookieNameLabel = $("<label>", {for: "node-config-input-jwtCookieName"}).text("JWT cookie name").appendTo(jwtCookieRow1);
       var jwtCookieName = $("<input>", {type: "text", id: "node-config-input-jwtCookieName", "placeholder": "JWT cookie name"}).appendTo(jwtCookieRow1);
       var jwtCookieRow2 = $("<div>", {class: "form-row"}).appendTo(advancedFormWrapper);
-      var jwtCookieMaxAgeLabel = $("<label>", {for: "node-config-input-jwtCookieMaxAge"}).text("JWT cookie max-age (ms)").appendTo(jwtCookieRow2);
-      var jwtCookieMaxAge = $("<input>", {type: "number", id: "node-config-input-jwtCookieMaxAge", "placeholder": "JWT cookie max-age (ms)"}).appendTo(jwtCookieRow2);
+      var jwtCookieMaxAgeLabel = $("<label>", {for: "node-config-input-jwtCookieMaxAge"}).text("JWT cookie max-age").appendTo(jwtCookieRow2);
+      var jwtCookieMaxAge = $("<input>", {type: "text", id: "node-config-input-jwtCookieMaxAge", "placeholder": "e.g. 1y 2M 3w 4d 5h 6m 7s 8ms"}).appendTo(jwtCookieRow2);
 
       var jwtSecretForm = $("<div>", {class: "form-row"}).appendTo(advancedFormWrapper);
       var jwtSecretLabel = $("<label>", {for: "node-config-input-jwtSecret"}).text("JWT secret").appendTo(jwtSecretForm);
