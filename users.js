@@ -116,17 +116,17 @@ function init(server, app, _log, redSettings) {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
 
-  app.get(path.join(usersConfig.appPath, 'static/app.css'), function (req, res) {
+  app.get(path.posix.join(usersConfig.appPath, 'static/app.css'), function (req, res) {
     res.sendFile(path.join(APP_DIR, 'static', 'app.css'));
   });
 
-  app.get(path.join(usersConfig.appPath, 'static/jquery.min.js'), function (req, res) {
+  app.get(path.posix.join(usersConfig.appPath, 'static/jquery.min.js'), function (req, res) {
     res.sendFile(path.join(APP_DIR, 'static', 'jquery.min.js'));
   });
 
   app.post(usersConfig.appPath, handleLogin);
 
-  app.get(path.join(usersConfig.appPath, 'logout'), handleLogout);
+  app.get(path.posix.join(usersConfig.appPath, 'logout'), handleLogout);
 
   app.get(usersConfig.appPath, appendTrailingSlash, function (req, res) {
     var payload = verifyJwt(req);
@@ -137,7 +137,7 @@ function init(server, app, _log, redSettings) {
     }
   });
 
-  var fullPath = path.join(redSettings.httpNodeRoot, usersConfig.appPath);
+  var fullPath = path.posix.join(redSettings.httpNodeRoot, usersConfig.appPath);
   log.info("Node users started " + fullPath);
 }
 
