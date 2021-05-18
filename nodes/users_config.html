@@ -102,10 +102,7 @@
   transition: max-height .2s 0s ease-in-out;
 }
 .advanced-form-wrapper.expanded {
-  max-height: 300px;
-  -moz-transition: max-height .2s 0s ease-in-out;
-  -webkit-transition: max-height .2s 0s ease-in-out;
-  transition: max-height .2s 0s ease-in-out;
+  max-height: 450px;
 }
 .users-login-link {
   overflow-wrap: break-word;
@@ -127,6 +124,7 @@
       name: {value: ""},
       appPath: {value: "/users"},
       jwtCookieName: {value: ""},
+      jwtCookieMaxAge: {value: ""},
       jwtHttpsOnly: {value: false}
     },
     credentials: {
@@ -148,6 +146,7 @@
       ////////////////////////////////
       var SHA512 = new Hashes.SHA512
       var DEFAULT_JWT_COOKIE_NAME = "nr.nodeUsers.jwt";
+      var DEFAULT_JWT_COOKIE_MAX_AGE = '1w';
       var DEFAULT_APP_PATH = '/users';
 
       var globalUserConfigNode = null;
@@ -183,9 +182,12 @@
       var appPathLabel = $("<label>", {for: "node-config-input-appPath"}).text("Base URL path").appendTo(appPathForm);
       var appPathInput = $("<input>", {type: "text", id: "node-config-input-appPath", "placeholder": "Base URL path (/users)"}).appendTo(appPathForm);
 
-      var jwtCookieForm = $("<div>", {class: "form-row"}).appendTo(advancedFormWrapper);
-      var jwtCookieLabel = $("<label>", {for: "node-config-input-jwtCookieName"}).text("JWT cookie name").appendTo(jwtCookieForm);
-      var jwtSecretInput = $("<input>", {type: "text", id: "node-config-input-jwtCookieName", "placeholder": "JWT cookie name"}).appendTo(jwtCookieForm);
+      var jwtCookieRow1 = $("<div>", {class: "form-row"}).appendTo(advancedFormWrapper);
+      var jwtCookieNameLabel = $("<label>", {for: "node-config-input-jwtCookieName"}).text("JWT cookie name").appendTo(jwtCookieRow1);
+      var jwtCookieName = $("<input>", {type: "text", id: "node-config-input-jwtCookieName", "placeholder": "JWT cookie name"}).appendTo(jwtCookieRow1);
+      var jwtCookieRow2 = $("<div>", {class: "form-row"}).appendTo(advancedFormWrapper);
+      var jwtCookieMaxAgeLabel = $("<label>", {for: "node-config-input-jwtCookieMaxAge"}).text("JWT cookie max-age").appendTo(jwtCookieRow2);
+      var jwtCookieMaxAge = $("<input>", {type: "text", id: "node-config-input-jwtCookieMaxAge", "placeholder": "e.g. 1y 2M 3w 4d 5h 6m 7s 8ms"}).appendTo(jwtCookieRow2);
 
       var jwtSecretForm = $("<div>", {class: "form-row"}).appendTo(advancedFormWrapper);
       var jwtSecretLabel = $("<label>", {for: "node-config-input-jwtSecret"}).text("JWT secret").appendTo(jwtSecretForm);
@@ -239,6 +241,7 @@
         var jwtSecret = $("#node-config-input-jwtSecret").val();
         var appPath = $("#node-config-input-appPath").val();
         var jwtCookieName = $("#node-config-input-jwtCookieName").val();
+        var jwtCookieMaxAge = $("#node-config-input-jwtCookieMaxAge").val();
         var jwtHttpsOnly = $("#node-config-input-httpsOnly").is(":checked");
         var nodeUsers = getNodeUsers();
 
@@ -259,6 +262,7 @@
             type: "users_config",
             appPath: appPath,
             jwtCookieName: jwtCookieName,
+            jwtCookieMaxAge: jwtCookieMaxAge,
             jwtHttpsOnly: jwtHttpsOnly,
             credentials: {
               jwtSecret: jwtSecret,
@@ -271,6 +275,7 @@
           globalUserConfigNode["_def"] = RED.nodes.getType("users_config");
           globalUserConfigNode.appPath = appPath;
           globalUserConfigNode.jwtCookieName = jwtCookieName;
+          globalUserConfigNode.jwtCookieMaxAge = jwtCookieMaxAge;
           globalUserConfigNode.jwtHttpsOnly = jwtHttpsOnly;
           globalUserConfigNode.credentials = {
             jwtSecret: jwtSecret,
@@ -316,6 +321,7 @@
               $("#node-config-input-appPath").val(globalUserConfigNode.appPath);
               $("#node-config-input-jwtSecret").val(globalUserConfigNode.credentials.jwtSecret);
               $("#node-config-input-jwtCookieName").val(globalUserConfigNode.jwtCookieName);
+              $("#node-config-input-jwtCookieMaxAge").val(globalUserConfigNode.jwtCookieMaxAge);
               $("#node-config-input-httpsOnly").prop("checked", globalUserConfigNode.jwtHttpsOnly);
 
               var nodeUsers = globalUserConfigNode.credentials.nodeUsers;
@@ -328,6 +334,7 @@
           } else {
             // users config not created, set defaults
             $("#node-config-input-jwtCookieName").val(DEFAULT_JWT_COOKIE_NAME);
+            $("#node-config-input-jwtCookieMaxAge").val(DEFAULT_JWT_COOKIE_MAX_AGE);
             $("#node-config-input-appPath").val(DEFAULT_APP_PATH);
             $("#node-config-input-jwtSecret").val(generateJwtSecret());
             save();
@@ -433,6 +440,13 @@
       $(document).on("blur", "#node-config-input-jwtCookieName", function () {
         if ($(this).val() === "") {
           $("#node-config-input-jwtCookieName").val(DEFAULT_JWT_COOKIE_NAME);
+        }
+        save();
+      });
+
+      $(document).on("blur", "#node-config-input-jwtCookieMaxAge", function () {
+        if ($(this).val() === "") {
+          $("#node-config-input-jwtCookieMaxAge").val(DEFAULT_JWT_COOKIE_MAX_AGE);
         }
         save();
       });

@@ -14,6 +14,7 @@
       "missing-users-config": "Node users config is missing",
       "missing-jwt-secret": "JWT secret is not set",
       "missing-jwt-cookie-name": "JWT cookie name is not set",
+      "missing-jwt-cookie-max-age": "JWT cookie max-age is not set",
       "missing-users-list": "Node users list is not set"
     }
   }

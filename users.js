@@ -5,7 +5,6 @@ var crypto = require('crypto');
 var bodyParser = require('body-parser');
 
 var APP_DIR = path.join(__dirname, './app');
-var JWT_COOKIE_EXPIRY =  604800000; // 7 days
 
 var log,
   redSettings,
@@ -34,11 +33,12 @@ function verifyJwt(req) {
   }
 }
 
-function createJwtToken(req, res, jwtSecret, jwtCookieName, payload) {
-  var token = jwt.sign(payload, jwtSecret);
-  res.cookie(jwtCookieName, token, {
-    maxAge: JWT_COOKIE_EXPIRY,
-    secure: usersConfig.jwtHttpsOnly === true
+function createJwtToken(req, res, payload) {
+  var token = jwt.sign(payload, usersConfig.credentials.jwtSecret);
+  res.cookie(usersConfig.jwtCookieName, token, {
+    maxAge: usersConfig.jwtCookieMaxAge,
+    secure: usersConfig.jwtHttpsOnly === true,
+    path:   req.baseUrl || '/'
   });
 }
 
@@ -76,7 +76,7 @@ function handleLogin(req, res) {
 
   log.debug('Authenticated node user:'+user.username);
 
-  createJwtToken(req, res, usersConfig.credentials.jwtSecret, usersConfig.jwtCookieName, {
+  createJwtToken(req, res, {
     username: user.username,
     scope: user.scope
   });
